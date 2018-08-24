@@ -34,10 +34,6 @@ function Get-BrightcoveVideoLength {
 }
 
 function Get-GoogleVideoSeconds ([string]$VideoID){
-  if(-not (Test-Path "$PSScriptRoot\Passwords\MyGoogleApi.txt"){
-    $api = Read-Host "Google API needed to get length of YouTube videos. Please enter it now (It will then be saved)"
-    Set-Content $PSScriptRoot\Passwords\MyGoogleApi.txt $api
-  }
  $gdata_uri = "https://www.googleapis.com/youtube/v3/videos?id=$VideoId&key=$GoogleApi&part=contentDetails"
  $metadata = irm $gdata_uri
  $duration = $metadata.items.contentDetails.duration;

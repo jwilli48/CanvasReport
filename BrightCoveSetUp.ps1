@@ -2,7 +2,7 @@
 function Set-BrightcoveCredentials{
   if(Test-Path "$PSScriptRoot\Passwords\MyBrightcovePassword.txt"){}
   else{
-    Write-Host "No Brightcove Credentials found, please enter them now." -ForegroundColor Red
+    Write-Host "No Brightcove Credentials found, please enter them now." -ForegroundColor Yellow
 
     . .\MakePassword.ps1
 

@@ -10,6 +10,8 @@ Import-Module ./Notifications.ps1 -Force
 Import-Module ./SearchCourse.ps1 -Force
 
 Set-BrightcoveCredentials
+Get-GoogleApi
+
 $course_id = Read-Host "Enter Course ID"
 $sw = [Diagnostics.Stopwatch]::new()
 $sw.start()

@@ -90,9 +90,12 @@ function AddToArray{
   $Global:locationList += $location
   if($excel -eq $NULL){}
   else{
-    if($excel.Workbook.Worksheets['Sheet1'].Names.Value -contains $videoID -and ($videoID -ne '' -or $VideoID -ne $NULL)){
-      $Global:videoIDList += "Duplicate Video:
-$videoID"
+    if($videoID -eq "" -or $videoID -eq $NULL){
+      $Global:videoIDList += $VideoID
+      $Global:videoLengthList += $VideoLength
+    }
+    elseif($excel.Workbook.Worksheets['Sheet1'].Names.Value -contains $videoID){
+      $Global:videoIDList += "Duplicate Video: `n$videoID"
       $Global:videoLengthList += ""
     }else{
       $Global:videoIDList += $VideoID
@@ -102,4 +105,13 @@ $videoID"
   $Global:textList += $Text
   $Global:mediaCountList += $MediaCount
   $excel.Dispose()
+}
+
+function Get-GoogleAPI{
+  if(-not (Test-Path "$PSScriptRoot\Passwords\MyGoogleApi.txt")){
+    Write-Host "Google API needed to get length of YouTube videos." -ForegroundColor Yellow
+    $api = Read-Host "Please enter it now (It will then be saved)"
+    Set-Content $PSScriptRoot\Passwords\MyGoogleApi.txt $api
+  }
+  $Global:GoogleApi = Get-Content "$PSScriptRoot\Passwords\MyGoogleApi.txt"
 }
