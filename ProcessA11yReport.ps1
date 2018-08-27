@@ -15,6 +15,7 @@ function Process_Contents{
   Process-Iframes
   Process-Images
   Process-Headers
+  Process-Tables
 
   $data = Transpose-Data Element, Location, VideoID, Text, Accessibility, IssueSeverity $elementList, $locationList, $videoIDList, $textList, $AccessibilityList, $issueSeverityList
   $Global:ExcelReport = $PSScriptRoot + "\Reports\A11yReport_" + $courseName + ".xlsx"
@@ -135,10 +136,26 @@ function Process-Headers{
         break
       }
     }
-
-
   }
 }
+
+function Process-Tables{
+  if($page_body.contains("<table")){
+    $check = $page_body.split("`n")
+    for($i = 0; $i -lt $check.length; $i++){
+      $hasHeaders = $FALSE
+      if($check[$i].contains("<table")){
+        while(-not ($check[$i].contains("</table>"))){
+          if($check[$i].contains("<th")){
+            $hasHeaders = $TRUE
+          }
+          $i++
+        }
+      }
+    }
+  }
+}
+
 function AddToArray{
   param(
     [string]$element,
