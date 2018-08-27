@@ -38,7 +38,13 @@ In order for this program to scan YouTube videos for closed captioning, you will
 4. Create an API key
 
 ## BUGS
-When generating the Media report the 2nd and 3rd Pivot Charts do not correctly display the times. In order to fix this you need to right click on column B, hit Format Cells, Choose Custom and then go down and select the [h]:mm:ss format. You will need to do this for both pivot chart sheets to see the time displayed in hours.
+When generating the Media report the 2nd and 3rd Pivot Charts do not correctly display the times. In order to fix this you need to right click on column B, hit Format Cells, Choose Custom and then go down and select the [h]:mm:ss format. You will need to do this for both pivot chart sheets to see the time displayed in hours. The default time it is showing is in days.
 
 ## RECOGNICTION
 Inspired by the VAST program originally created by the University of Central Florida at https://github.com/ucfopen/VAST
+
+# Accessibility Report Generator
+It does not catch every accessibility issue. For example:
+1. It does not yet check if tables have headers and scope attributes
+2. It can't check anything that appears after JavaScript is run on the page
+
