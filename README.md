@@ -1,11 +1,11 @@
+# Canvas Report Generator
 ## DEPENDANCIES
 They will be automatically installed when first running the program.
-	ImportExcel module
-	BurntToast module
+1. ImportExcel Module
+2. BurntToast Module
 
 ## How to Run
-The ps2exe.ps1 file is included as it is used to create and update the .exe files.
-Now that they are executable files you no longer need to change your PowerShell policy.
+Just run the .exe file for the report you want to generate. If it is the first time running it will ask you for certain credentials needed to fully run the program and then it will save them into the Passwords directory that will also be created on the first time being run. If you need to reset any of the data entered just delete the text fils or the whole Password directory to reset them.
 
 To run this program from PowerShell if your PowerShell execution policy is restricted, do the following commands:
 1. Navigate to folder containing these scripts (Change path to where you have it on your computer)
@@ -23,12 +23,13 @@ If you wish to be able to run the program without doing the above every time, th
 
 ## Reports
 The report will be generated and saved to the Report folder within this directory. If you try to create a 2nd report for a course while there is a previous one still there it will just add to the bottom of the previous one instead of creating a new one.
+
 ## First time running
 The first time you run this it will ask you to input your Canvas API and the Canvas Default URL, as well as Brightcove credentials and a Google API
 1.You will need to generate your own API from your Account Settings in Canvas
 2.The default/base URL for BYU's canvas is https://byu.instructure.com
 
-### Google/YouTube API Key
+## Google/YouTube API Key
 In order for this program to scan YouTube videos for closed captioning, you will need to create a YouTube Data API key.
 
 1. Go to the [Google Developer Console](https://console.developers.google.com).
