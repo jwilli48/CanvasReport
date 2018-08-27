@@ -33,21 +33,28 @@ function Process-Links{
     }
   }
   $href_list = $link_list | Select-String -pattern 'href="(.*?)"' -AllMatches | % {$_.Matches.Groups[1].Value}
-  <#Checks broken links, not needed since Canvas has it built in
-  foreach($href in $href_list){
-    if($href.contains("mailto")){
-      #email link
-      continue
-    }
-    try{
-      Invoke-WebRequest $href | Out-Null
-    }catch{
-      #There is also a SecureChannelFailure but it seems that for the majority of cases those work still when clicking the link
-      if($_.Exception.Status -eq "SendFailure"){
-        AddToArray "Link" $page.title "" $href "Broken link"
+  #Checks broken links, not needed since Canvas has it built in
+  if($Global:CheckLinks -eq $NULL){
+    Read-Host "Would you like to check for broken links? (Y/N)`nThis on average doubles the time to generate this report"
+  }else{
+    if($Global:CheckLinks -match "Y"){
+      foreach($href in $href_list){
+        if($href.contains("mailto")){
+          #email link
+          continue
+        }
+        try{
+          Invoke-WebRequest $href | Out-Null
+        }catch{
+          #There is also a SecureChannelFailure but it seems that for the majority of cases those work still when clicking the link
+          if($_.Exception.Status -eq "SendFailure"){
+            AddToArray "Link" $page.title "" $href "Broken link"
+          }
+        }
       }
     }
-  }#>
+  }
+
   $link_text = $link_list | Select-String -pattern '<a.*?>(.*?)</a>' -AllMatches | % {$_.Matches.Groups[1].Value}
   for($i = 0; $i -lt $link_text.length; $i++){
     switch -regex ($link_text[$i])
