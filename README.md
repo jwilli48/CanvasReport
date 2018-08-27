@@ -45,6 +45,6 @@ Inspired by the VAST program originally created by the University of Central Flo
 
 # Accessibility Report Generator
 It does not catch every accessibility issue. For example:
-1. It does not yet check if tables have headers and scope attributes
 2. It can't check anything that appears after JavaScript is run on the page
 
+***This check can not tell if things are inaccessible if they rely on context*** (ex. it wil only check if a table has any headers, not if the headers are correct or not)
