@@ -19,7 +19,7 @@ function Process_Contents{
 
   $data = Transpose-Data Element, Location, VideoID, Text, Accessibility, IssueSeverity $elementList, $locationList, $videoIDList, $textList, $AccessibilityList, $issueSeverityList
   $Global:ExcelReport = $PSScriptRoot + "\Reports\A11yReport_" + $courseName + ".xlsx"
-  $markRed  = @((New-ConditionalText -Text "Adjust Link Text" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Needs a title" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "No Alt Attribute" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Alt Text May Need Adjustment" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "JavaScript links are not accessible" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Check if header" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'))
+  $markRed  = @((New-ConditionalText -Text "Adjust Link Text" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Needs a title" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "No Alt Attribute" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Alt Text May Need Adjustment" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "JavaScript links are not accessible" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Check if header" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Broken Link" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'))
   if(-not ($data -eq $NULL)){
     $data | Export-Excel $ExcelReport -ConditionalText $markRed -AutoFilter -AutoSize -Append
   }
@@ -33,6 +33,21 @@ function Process-Links{
     }
   }
   $href_list = $link_list | Select-String -pattern 'href="(.*?)"' -AllMatches | % {$_.Matches.Groups[1].Value}
+  <#Checks broken links, not needed since Canvas has it built in
+  foreach($href in $href_list){
+    if($href.contains("mailto")){
+      #email link
+      continue
+    }
+    try{
+      Invoke-WebRequest $href | Out-Null
+    }catch{
+      #There is also a SecureChannelFailure but it seems that for the majority of cases those work still when clicking the link
+      if($_.Exception.Status -eq "SendFailure"){
+        AddToArray "Link" $page.title "" $href "Broken link"
+      }
+    }
+  }#>
   $link_text = $link_list | Select-String -pattern '<a.*?>(.*?)</a>' -AllMatches | % {$_.Matches.Groups[1].Value}
   for($i = 0; $i -lt $link_text.length; $i++){
     switch -regex ($link_text[$i])
@@ -45,6 +60,9 @@ function Process-Links{
         AddToArray "Link" $page.title "" $link_text[$i] "Adjust Link Text"; break
       }
       "Click Here" {
+        AddToArray "Link" $page.title "" $link_text[$i] "Adjust Link Text"; break
+      }
+      "http"{
         AddToArray "Link" $page.title "" $link_text[$i] "Adjust Link Text"; break
       }
       "https"{
