@@ -1,9 +1,9 @@
-##DEPENDANCIES
+## DEPENDANCIES
 They will be automatically installed when first running the program.
 	ImportExcel module
 	BurntToast module
 
-##How to Run
+## How to Run
 The ps2exe.ps1 file is included as it is used to create and update the .exe files.
 Now that they are executable files you no longer need to change your PowerShell policy.
 
@@ -21,9 +21,9 @@ If you wish to be able to run the program without doing the above every time, th
 	Set-ExecutionPolicy Bypass -Scope CurrentUser
 2. You can then just right click the program and hit 'Run with PowerShell'
 
-##Reports
+## Reports
 The report will be generated and saved to the Report folder within this directory. If you try to create a 2nd report for a course while there is a previous one still there it will just add to the bottom of the previous one instead of creating a new one.
-##First time running
+## First time running
 The first time you run this it will ask you to input your Canvas API and the Canvas Default URL, as well as Brightcove credentials and a Google API
 1.You will need to generate your own API from your Account Settings in Canvas
 2.The default/base URL for BYU's canvas is https://byu.instructure.com
@@ -36,8 +36,8 @@ In order for this program to scan YouTube videos for closed captioning, you will
 3. Enable YouTube Data API
 4. Create an API key
 
-##BUGS
+## BUGS
 When generating the Media report the 2nd and 3rd Pivot Charts do not correctly display the times. In order to fix this you need to right click on column B, hit Format Cells, Choose Custom and then go down and select the [h]:mm:ss format. You will need to do this for both pivot chart sheets to see the time displayed in hours.
 
-##RECOGNICTION
+## RECOGNICTION
 Inspired by the VAST program originally created by the University of Central Florida at https://github.com/ucfopen/VAST
