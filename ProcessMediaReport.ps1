@@ -36,7 +36,12 @@ function Process-Links{
         }else{
           $VideoID = $href_list[$i].split('/')[-1]
         }
-        $video_Length = [timespan]::fromseconds((Get-GoogleVideoSeconds -VideoID $VideoID)).toString("hh\:mm\:ss")
+        try{
+          $video_Length = [timespan]::fromseconds((Get-GoogleVideoSeconds -VideoID $VideoID)).toString("hh\:mm\:ss")
+        }catch{
+          Write-Host "Video not found"
+          $video_length = "00:00:00"
+        }
         AddToArray "Youtube Link" $page.title $VideoID $video_Length $href_list[$i]; break
       }
       Default {}
@@ -61,7 +66,12 @@ function Process-Iframes{
       }else{
         $Video_ID = $VideoLink.split('/')[-1]
       }
-      $video_Length = [timespan]::fromseconds((Get-GoogleVideoSeconds -VideoID $Video_ID)).toString("hh\:mm\:ss")
+      try{
+        $video_Length = [timespan]::fromseconds((Get-GoogleVideoSeconds -VideoID $Video_ID)).toString("hh\:mm\:ss")
+      }catch{
+        Write-Host "Video not found"
+        $video_length = "00:00:00"
+      }
       AddToArray "Youtube Video" $page.title $video_ID $video_Length $title
     }elseif($iframe.contains('brightcove')){
       $Video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].value}).split('=')[-1]

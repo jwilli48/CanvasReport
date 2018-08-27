@@ -14,10 +14,11 @@ function Process_Contents{
   Process-Links
   Process-Iframes
   Process-Images
+  Process-Headers
 
   $data = Transpose-Data Element, Location, VideoID, Text, Accessibility, IssueSeverity $elementList, $locationList, $videoIDList, $textList, $AccessibilityList, $issueSeverityList
   $Global:ExcelReport = $PSScriptRoot + "\Reports\A11yReport_" + $courseName + ".xlsx"
-  $markRed  = @((New-ConditionalText -Text "Adjust Link Text" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Needs a title" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "No Alt Attribute" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Alt Text May Need Adjustment" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'))
+  $markRed  = @((New-ConditionalText -Text "Adjust Link Text" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Needs a title" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "No Alt Attribute" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Alt Text May Need Adjustment" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "JavaScript links are not accessible" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Check if header" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'))
   if(-not ($data -eq $NULL)){
     $data | Export-Excel $ExcelReport -ConditionalText $markRed -AutoFilter -AutoSize -Append
   }
@@ -25,6 +26,11 @@ function Process_Contents{
 
 function Process-Links{
   $link_list = $page_body | Select-String -pattern "<a.*?>.*?</a>" -AllMatches | % {$_.Matches.Value}
+  foreach($link in $link_list){
+    if($link.contains('onlick')){
+      AddToArray "JavaScript Link" $page.title "" $link "JavaScript links are not accessible"
+    }
+  }
   $href_list = $link_list | Select-String -pattern 'href="(.*?)"' -AllMatches | % {$_.Matches.Groups[1].Value}
   $link_text = $link_list | Select-String -pattern '<a.*?>(.*?)</a>' -AllMatches | % {$_.Matches.Groups[1].Value}
   for($i = 0; $i -lt $link_text.length; $i++){
@@ -34,7 +40,7 @@ function Process-Links{
         #It will be caught by Proccess-Image
         break
       }
-      "here" {
+      "\bhere\b" {
         AddToArray "Link" $page.title "" $link_text[$i] "Adjust Link Text"; break
       }
       "Click Here" {
@@ -52,7 +58,7 @@ function Process-Links{
 }
 
 function Process-Images{
-  $image_list = $page_body | Select-String -pattern '<img.*>' -AllMatches | % {$_.Matches.Value}
+  $image_list = $page_body | Select-String -pattern '<img.*?>' -AllMatches | % {$_.Matches.Value}
   foreach($img in $image_list){
     $alt = ""
     if(-not $img.contains('alt')){
@@ -115,7 +121,24 @@ function Process-Iframes{
   }
 }
 
+function Process-Headers{
+  $headerList = $page_body | Select-String -pattern '<h\d.*?>.*?</h\d>' -Allmatches | % {$_.Matches.Value}
+  $accessibility = ""
+  foreach($header in $headerList){
+    $headerLevel = $header | Select-String -Pattern "<h(\d)" -Allmatches | % {$_.matches.Groups[1].Value}
+    $headerText = $header | Select-String -pattern '<h\d.*?>(.*?)</h\d>' -AllMatches | % {$_.Matches.Groups[1].Value}
+    switch -regex ($header)
+    {
+      'class=".*?screenreader-only.*?"'{
+        $accessibility = "Check if header is meant to be invisible and is not a duplicate"
+        AddToArray "Header Level $headerLevel" $page.title "" $header $Accessibility
+        break
+      }
+    }
 
+
+  }
+}
 function AddToArray{
   param(
     [string]$element,

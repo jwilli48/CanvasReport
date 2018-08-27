@@ -13,7 +13,7 @@ function Format-A11yExcel{
 
 function Get-A11yPivotTables{
   Export-Excel $ExcelReport -Numberformat '#############' -IncludePivotTable -IncludePivotChart -PivotRows "Element" -PivotData @{IssueSeverity='sum'} -ChartType PieExploded3d -ShowCategory -ShowPercent -PivotTableName 'IssueSeverity'
-  Export-Excel $ExcelReport -IncludePivotTable -IncludePivotChart -PivotRows "Location" -PivotData @{IssueSeverity='sum'} -ChartType PieExploded3d -ShowCategory -ShowPercent -PivotTableName 'IssueLocations' -NoLegend
+  Export-Excel $ExcelReport -Numberformat '#############' -IncludePivotTable -IncludePivotChart -PivotRows "Location" -PivotData @{IssueSeverity='sum'} -ChartType PieExploded3d -ShowPercent -PivotTableName 'IssueLocations' -NoLegend
 }
 
 #MEDIA REPORT FORMATTING
