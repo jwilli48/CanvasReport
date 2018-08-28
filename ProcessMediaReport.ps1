@@ -98,7 +98,15 @@ function Process-Iframes{
       $transcript = Get-TranscriptAvailable $iframe
       if($transcript){$transcript = "Yes"}
       else{$transcript = "No"}
-      AddToArray "Byu Mediasite Video" $page.title $video_ID $video_Length $title $transcript
+      AddToArray "BYU Mediasite Video" $page.title $video_ID $video_Length $title $transcript
+    }
+    elseif($iframe.contains('Panopto')){
+      $video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].Value}).split('=').split('&')[1]
+      $video_Length = (Get-PanoptoVideoLength $video_ID).toString('hh\:mm\:ss')
+      $transcript = Get-TranscriptAvailable $iframe
+      if($transcript){$transcript = "Yes"}
+      else{$transcript = "No"}
+      AddToArray "Panopto Video" $page.title $video_ID $video_Length $title $transcript
     }
     else{
       AddToArray "Iframe" $page.title "" "00:00:00" $title "N\A"

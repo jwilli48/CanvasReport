@@ -43,4 +43,5 @@ function Get-MediaPivotTables{
   Export-Excel $ExcelReport -IncludePivotTable -IncludePivotChart -PivotRows "Element" -PivotData @{MediaCount='sum'} -ChartType PieExploded3d -ShowCategory -ShowPercent -PivotTableName "MediaTypes"
   Export-Excel $ExcelReport -IncludePivotTable -IncludePivotChart -PivotRows "Element" -PivotData @{VideoLength='sum'} -ChartType PieExploded3d -ShowPercent -PivotTableName "MediaLength"
   Export-Excel $ExcelReport -IncludePivotTable -IncludePivotChart -PivotRows "Location" -PivotData @{VideoLength='sum'} -ChartType PieExploded3d -ShowPercent -PivotTableName "MediaLengthByLocation" -NoLegend
+  Export-Excel $ExcelReport -IncludePivotTable -IncludePivotChart -PivotRows "Transcript" -PivotData @{VideoLength='sum'} -ChartType PieExploded3d -ShowCategory -ShowPercent -PivotTableName "TranscriptsVideoLength"
 }

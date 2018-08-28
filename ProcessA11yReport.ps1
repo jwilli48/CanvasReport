@@ -35,6 +35,7 @@ function Process-Links{
     }
   }
   $href_list = $link_list | Select-String -pattern 'href="(.*?)"' -AllMatches | % {$_.Matches.Groups[1].Value}
+
   <#Checks broken links, not needed since Canvas has it built in
   if($Global:CheckLinks -eq $NULL){
     $host.ui.rawui.foregroundColor = "Yellow"
@@ -144,9 +145,6 @@ function Process-Iframes{
       elseif($iframe.contains('brightcove')){
         $Video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].value}).split('=')[-1]
         AddToArray "Brightcove Video" $page.title $video_ID $title $Accessibility
-        if(-not (Get-TranscriptAvailable $iframe)){
-          AddToArray "Transcript" "$($page.title) -> Video Id: $video_ID" "" "Brightcove Video Title: $title" "No transcript found"
-        }
       }
       elseif($iframe.contains('H5P')){
         AddToArray "H5P" $page.title "" $title $Accessibility
@@ -156,15 +154,26 @@ function Process-Iframes{
         if($video_ID -eq ""){
           $video_id = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].Value}).split('/')[-2]
         }
-        AddToArray "Byu Mediasite Video" $page.title $video_ID $title $Accessibility
-        if(-not (Get-TranscriptAvailable $iframe)){
-          AddToArray "Transcript" "$($page.title) -> Video Id: $video_ID" "" "Byu Mediasite Video Title: $title" "No transcript found"
-        }
+        AddToArray "BYU Mediasite Video" $page.title $video_ID $title $Accessibility
+      }
+      elseif($iframe.contains('Panopto')){
+        $video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].Value}).split('=').split('&')[1]
+        AddToArray "Panopto Video" $page.title $video_ID $title $Accessibility
       }
       else{
         AddToArray "Iframe" $page.title "" $title $Accessibility
       }
     }
+  }
+  #Check for transcripts
+  $i = 1;
+  foreach($iframe in $iframeList){
+    if($iframe.contains('youtube') -or $iframe.contains('brightcove') -or $iframe.contains('byu.mediasite') -or $iframe.contains('Panopto')){
+      if(-not (Get-TranscriptAvailable $iframe)){
+        AddToArray "Transcript" "$($page.title)" "" "Video number $i on page" "No transcript found"
+      }
+    }
+    $i++
   }
 }
 

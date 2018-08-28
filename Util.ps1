@@ -64,6 +64,25 @@ function Get-BYUMediaSiteVideoLength{
   $length
 }
 
+function Get-PanoptoVideoLength{
+  param(
+    [string]$videoID
+  )
+  $chrome.url = "https://byu.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=$videoID&amp;v=1"
+  while($chrome.ExecuteScript("return document.readyState") -ne "complete"){}
+  while($chrome.ExecuteScript("return jQuery.active") -ne 0){}
+  try{
+    (Wait-UntilElementIsVisible -Selector 'div[aria-label="Play"]' -byCssSelector).click()
+    $length = (Wait-UntilElementIsVisible -Selector span[class*="duration"] -byCssSelector).text
+  }catch{
+    Write-Host "Video not found"
+    $length = "00:00"
+  }
+  $length = "00:" + $length
+  $length = [TimeSpan]$length
+  $length
+}
+
 function Get-TranscriptAvailable{
   param(
     [string]$iframe
