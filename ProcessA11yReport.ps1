@@ -46,7 +46,7 @@ function Process-Links{
         try{
           Invoke-WebRequest $href | Out-Null
         }catch{
-          #There is also a SecureChannelFailure but it seems that for the majority of cases those work still when clicking the link
+          #There is also a SecureChannelFailure error status but it seems that for the majority of cases those still work when clicking the link manually
           if($_.Exception.Status -eq "SendFailure"){
             AddToArray "Link" $page.title "" $href "Broken link"
           }

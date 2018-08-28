@@ -18,7 +18,7 @@ Function Search-Course{
         continue
       }
       $page = Get-CanvasCoursesPagesByCourseIdAndUrl -CourseId $course_id -Url $item.page_url
-      Write-Host $page.title
+      Write-Host $page.title -ForegroundColor Green
       $page_body = $page.body
       if($page_body -eq '' -or $page_body -eq $NULL){
         #Page is empty
