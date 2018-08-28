@@ -57,6 +57,9 @@ function Process-Iframes{
       $title = "No Title"
     }else{
       $title = $iframe | Select-String -pattern 'title="(.*?)"' | % {$_.Matches.Groups[1].value}
+      if($title -eq $NULL -or $title -eq ""){
+        $title = "Title found but was empty or could not be saved."
+      }
     }
 
     if($iframe.contains('youtube')){
