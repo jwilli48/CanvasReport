@@ -23,7 +23,7 @@ function Start-Chrome{
     $Global:chrome = New-Object OpenQA.Selenium.Chrome.Chromedriver
   }
   #Object that allows you to wait until a certain condition is filled
-  $Global:chromeWait = New-Object -TypeName OpenQA.Selenium.Support.UI.WebDriverWait($chrome, (New-TimeSpan -Seconds 3))
+  $Global:chromeWait = New-Object -TypeName OpenQA.Selenium.Support.UI.WebDriverWait($chrome, (New-TimeSpan -Seconds 6))
   #The condition for the above WebDriverWait object
   $Global:conditions = [OpenQA.Selenium.Support.UI.ExpectedConditions]
   #Search conditions that can be input, mostly for the WebDriverWait object

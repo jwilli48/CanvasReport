@@ -45,3 +45,21 @@ function Get-GoogleVideoSeconds ([string]$VideoID){
  $totalSeconds = $timespan.TotalSeconds
  $totalSeconds
 }
+
+function Get-BYUMediaSiteVideoLength{
+  param(
+    [string]$videoID
+  )
+  $chrome.url = "https://byu.mediasite.com/Mediasite/Play/" + $videoID
+  try{
+    while($length -eq "0:00" -or $length -eq "" -or $length -eq $NULL){
+      $length = (Wait-UntilElementIsVisible -Selector span[class*="duration"] -byCssSelector).text
+    }
+  }catch{
+    Write-Host "Video not found"
+    $length = "00:00"
+  }
+  $length = "00:" + $length
+  $length = [TimeSpan]$length
+  $length
+}

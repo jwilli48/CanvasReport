@@ -82,6 +82,13 @@ function Process-Iframes{
       AddToArray "Brightcove Video" $page.title $video_ID $video_Length $title
     }elseif($iframe.contains('H5P')){
       AddToArray "H5P" $page.title "" "00:00:00" $title
+    }elseif($iframe.contains('byu.mediasite')){
+      $video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].Value}).split('/')[-1]
+      if($video_ID -eq ""){
+        $video_id = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].Value}).split('/')[-2]
+      }
+      $video_Length = (Get-BYUMediaSiteVideoLength $Video_ID).toString('hh\:mm\:ss')
+      AddToArray "Byu Mediasite Video" $page.title $video_ID $video_Length $title
     }else{
       AddToArray "Iframe" $page.title "" "00:00:00" $title
     }
