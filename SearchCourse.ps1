@@ -10,7 +10,7 @@ Function Search-Course{
   foreach($module in $course_modules){
     $i++
     Write-Progress -Activity "Checking pages" -Status "Progress:" -PercentComplete ($i/$course_modules.length * 100)
-    Write-Host $module.name -ForegroundColor Cyan
+    Write-Host "Module: $($module.name)" -ForegroundColor Cyan
     $moduleItems = Get-CanvasModuleItem -Course $course_id -ModuleId $module.id
     foreach($item in $ModuleItems){
       if($item.page_url -eq $NULL){
