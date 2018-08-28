@@ -54,8 +54,8 @@ function Process-Links{
           }
         }
       }
-    }#>
-  }
+    }
+  }#>
 
   $link_text = $link_list | Select-String -pattern '<a.*?>(.*?)</a>' -AllMatches | % {$_.Matches.Groups[1].Value}
   for($i = 0; $i -lt $link_text.length; $i++){
