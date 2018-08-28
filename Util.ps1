@@ -63,3 +63,20 @@ function Get-BYUMediaSiteVideoLength{
   $length = [TimeSpan]$length
   $length
 }
+
+function Get-TranscriptAvailable{
+  param(
+    [string]$iframe
+  )
+  $check = $page_body.split("`n")
+  $i = 0
+  while(-not $check[$i].contains($iframe)){$i++}
+  if($check[$i+1].contains('Transcript')){
+    return $true
+  }elseif($check[$i-1].contains('Transcript')){
+    return $true
+  }else{
+    return $false
+  }
+
+}

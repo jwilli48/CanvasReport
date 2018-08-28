@@ -9,6 +9,7 @@ function Process_Contents{
   $Global:videoIDList = @()
   $Global:videoLengthList = @()
   $Global:textList = @()
+  $Global:transcriptAvailability = @()
   $Global:mediaCountList = @()
 
   $Global:ExcelReport = $PSScriptRoot + "\Reports\MediaReport_" + $courseName + ".xlsx"
@@ -16,11 +17,11 @@ function Process_Contents{
   Process-Links
   Process-Iframes
 
-  $data = Transpose-Data Element, Location, VideoID, VideoLength, Text, MediaCount $elementList, $locationList, $videoIDList, $videoLengthList, $textList, $mediaCountList
+  $data = Transpose-Data Element, Location, VideoID, VideoLength, Text, Transcript, MediaCount $elementList, $locationList, $videoIDList, $videoLengthList, $textList, $transcriptAvailability, $mediaCountList
   $markRed = @((New-ConditionalText -Text "No Title" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'))
   $highlight = @((New-ConditionalText -Text "Duplicate Video" -BackgroundColor '#ffff8b' -ConditionalTextColor '#000000' ))
   if(-not ($data -eq $NULL)){
-    $data | Export-Excel $ExcelReport -ConditionalText $markRed, $highlight -AutoFilter -AutoSize -Append
+    $data | Export-Excel $ExcelReport -ConditionalText $highlight -AutoFilter -AutoSize -Append
   }
 }
 
@@ -42,7 +43,7 @@ function Process-Links{
           Write-Host "Video not found"
           $video_length = "00:00:00"
         }
-        AddToArray "Youtube Link" $page.title $VideoID $video_Length $href_list[$i]; break
+        AddToArray "Youtube Link" $page.title $VideoID $video_Length $href_list[$i] "Yes"; break
       }
       Default {}
     }
@@ -54,7 +55,7 @@ function Process-Iframes{
   foreach($iframe in $iframeList){
     $title = ""
     if(-not $iframe.contains('title')){
-      $title = "No Title"
+      $title = "No Title Found"
     }else{
       $title = $iframe | Select-String -pattern 'title="(.*?)"' | % {$_.Matches.Groups[1].value}
       if($title -eq $NULL -or $title -eq ""){
@@ -75,22 +76,32 @@ function Process-Iframes{
         Write-Host "Video not found"
         $video_length = "00:00:00"
       }
-      AddToArray "Youtube Video" $page.title $video_ID $video_Length $title
-    }elseif($iframe.contains('brightcove')){
+      AddToArray "Youtube Video" $page.title $video_ID $video_Length $title "Yes"
+    }
+    elseif($iframe.contains('brightcove')){
       $Video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].value}).split('=')[-1]
       $video_Length = (Get-BrightcoveVideoLength $Video_ID).toString('hh\:mm\:ss')
-      AddToArray "Brightcove Video" $page.title $video_ID $video_Length $title
-    }elseif($iframe.contains('H5P')){
-      AddToArray "H5P" $page.title "" "00:00:00" $title
-    }elseif($iframe.contains('byu.mediasite')){
+      $transcript = Get-TranscriptAvailable $iframe
+      if($transcript){$transcript = "Yes"}
+      else{$transcript = "No"}
+      AddToArray "Brightcove Video" $page.title $video_ID $video_Length $title $transcript
+    }
+    elseif($iframe.contains('H5P')){
+      AddToArray "H5P" $page.title "" "00:00:00" $title "N\A"
+    }
+    elseif($iframe.contains('byu.mediasite')){
       $video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].Value}).split('/')[-1]
       if($video_ID -eq ""){
         $video_id = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].Value}).split('/')[-2]
       }
       $video_Length = (Get-BYUMediaSiteVideoLength $Video_ID).toString('hh\:mm\:ss')
-      AddToArray "Byu Mediasite Video" $page.title $video_ID $video_Length $title
-    }else{
-      AddToArray "Iframe" $page.title "" "00:00:00" $title
+      $transcript = Get-TranscriptAvailable $iframe
+      if($transcript){$transcript = "Yes"}
+      else{$transcript = "No"}
+      AddToArray "Byu Mediasite Video" $page.title $video_ID $video_Length $title $transcript
+    }
+    else{
+      AddToArray "Iframe" $page.title "" "00:00:00" $title "N\A"
     }
   }
 }
@@ -102,6 +113,7 @@ function AddToArray{
     [string]$VideoID,
     [TimeSpan]$VideoLength,
     [string]$Text,
+    [string]$Transcript,
     [string]$MediaCount = 1
   )
   $excel = Export-Excel $ExcelReport -PassThru
@@ -123,6 +135,7 @@ function AddToArray{
     }
   }
   $Global:textList += $Text
+  $Global:transcriptAvailability += $Transcript
   $Global:mediaCountList += $MediaCount
   $excel.Dispose()
 }

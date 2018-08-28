@@ -19,7 +19,7 @@ function Process_Contents{
 
   $data = Transpose-Data Element, Location, VideoID, Text, Accessibility, IssueSeverity $elementList, $locationList, $videoIDList, $textList, $AccessibilityList, $issueSeverityList
   $Global:ExcelReport = $PSScriptRoot + "\Reports\A11yReport_" + $courseName + ".xlsx"
-  $markRed  = @((New-ConditionalText -Text "Adjust Link Text" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Needs a title" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "No Alt Attribute" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Alt Text May Need Adjustment" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "JavaScript links are not accessible" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Check if header" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Broken Link" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'),(New-ConditionalText -Text "Empty link tag" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'))
+  $markRed  = @((New-ConditionalText -Text "Adjust Link Text" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Needs a title" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "No Alt Attribute" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Alt Text May Need Adjustment" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "JavaScript links are not accessible" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Check if header" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Broken Link" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'),(New-ConditionalText -Text "Empty link tag" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'),(New-ConditionalText -Text "No transcript found" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'))
   if(-not ($data -eq $NULL)){
     $data | Export-Excel $ExcelReport -ConditionalText $markRed -AutoFilter -AutoSize -Append
   }
@@ -136,15 +136,32 @@ function Process-Iframes{
     $title = ""
     if(-not $iframe.contains('title')){
       $Accessibility = "Needs a title"
+
       if($iframe.contains('youtube')){
         $Video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].value}).split('/')[4].split('?')[0]
         AddToArray "Youtube Video" $page.title $video_ID $title $Accessibility
-      }elseif($iframe.contains('brightcove')){
+      }
+      elseif($iframe.contains('brightcove')){
         $Video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].value}).split('=')[-1]
         AddToArray "Brightcove Video" $page.title $video_ID $title $Accessibility
-      }elseif($iframe.contains('H5P')){
+        if(-not (Get-TranscriptAvailable $iframe)){
+          AddToArray "Transcript" "$($page.title) -> Video Id: $video_ID" "" "Brightcove Video Title: $title" "No transcript found"
+        }
+      }
+      elseif($iframe.contains('H5P')){
         AddToArray "H5P" $page.title "" $title $Accessibility
-      }else{
+      }
+      elseif($iframe.contains('byu.mediasite')){
+        $video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].Value}).split('/')[-1]
+        if($video_ID -eq ""){
+          $video_id = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].Value}).split('/')[-2]
+        }
+        AddToArray "Byu Mediasite Video" $page.title $video_ID $title $Accessibility
+        if(-not (Get-TranscriptAvailable $iframe)){
+          AddToArray "Transcript" "$($page.title) -> Video Id: $video_ID" "" "Byu Mediasite Video Title: $title" "No transcript found"
+        }
+      }
+      else{
         AddToArray "Iframe" $page.title "" $title $Accessibility
       }
     }
