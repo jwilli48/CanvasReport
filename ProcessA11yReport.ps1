@@ -33,9 +33,11 @@ function Process-Links{
     }
   }
   $href_list = $link_list | Select-String -pattern 'href="(.*?)"' -AllMatches | % {$_.Matches.Groups[1].Value}
-  #Checks broken links, not needed since Canvas has it built in
+  <#Checks broken links, not needed since Canvas has it built in
   if($Global:CheckLinks -eq $NULL){
+    $host.ui.rawui.foregroundColor = "Yellow"
     $Global:CheckLinks = Read-Host "Would you like to check for broken links? (Y/N)`nThis on average doubles the time to generate this report"
+    $host.ui.rawui.foregroundColor = "White"
   }else{
     if($Global:CheckLinks -match "Y"){
       foreach($href in $href_list){
@@ -52,7 +54,7 @@ function Process-Links{
           }
         }
       }
-    }
+    }#>
   }
 
   $link_text = $link_list | Select-String -pattern '<a.*?>(.*?)</a>' -AllMatches | % {$_.Matches.Groups[1].Value}
