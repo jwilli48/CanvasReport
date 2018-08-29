@@ -7,4 +7,7 @@ function Get-Modules{
     Write-Host "You need to have the BurntToast module installed. Installing now..." -ForegroundColor Yellow
     Install-Module BurntToast -Scope CurrentUser
   }
+  if(-not (Test-Path "$PSScriptRoot\Reports")){
+    New-Item -Path "$PsScriptRoot\Reports" -ItemType Directory
+  }
 }
