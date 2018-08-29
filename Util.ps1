@@ -90,8 +90,10 @@ function Get-TranscriptAvailable{
   $check = $page_body.split("`n")
   $i = 0
   while(-not $check[$i].contains($iframe)){$i++}
-  if($check[$i+1].contains('Transcript')){
-    return $true
+  if($check[$i+1] -ne $NULL){
+    if($check[$i+1].contains('Transcript')){
+      return $true
+    }
   }elseif($check[$i-1].contains('Transcript')){
     return $true
   }else{
