@@ -59,29 +59,31 @@ function Process-Links{
       }
     }
   }#>
-
   $link_text = $link_list | Select-String -pattern '<a.*?>(.*?)</a>' -AllMatches | % {$_.Matches.Groups[1].Value}
-  for($i = 0; $i -lt $link_text.length; $i++){
-    switch -regex ($link_text[$i])
+  foreach($text in $link_text){
+    switch -regex ($text)
     {
       '<img' {
         #It will be caught by Proccess-Image
         break
       }
+      $NULL{
+        AddToArray "Link" $page.title "" "Invisble link with no text" "Adjust Link Text"; break
+      }
       "\bhere\b" {
-        AddToArray "Link" $page.title "" $link_text[$i] "Adjust Link Text"; break
+        AddToArray "Link" $page.title "" $text "Adjust Link Text"; break
       }
       "Click Here" {
-        AddToArray "Link" $page.title "" $link_text[$i] "Adjust Link Text"; break
+        AddToArray "Link" $page.title "" $text "Adjust Link Text"; break
       }
       "http"{
-        AddToArray "Link" $page.title "" $link_text[$i] "Adjust Link Text"; break
+        AddToArray "Link" $page.title "" $text "Adjust Link Text"; break
       }
       "https"{
-        AddToArray "Link" $page.title "" $link_text[$i] "Adjust Link Text"; break
+        AddToArray "Link" $page.title "" $text "Adjust Link Text"; break
       }
       "www\."{
-        AddToArray "Link" $page.title "" $link_text[$i] "Adjust Link Text"; break
+        AddToArray "Link" $page.title "" $text "Adjust Link Text"; break
       }
       Default {}
     }
