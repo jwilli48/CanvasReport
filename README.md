@@ -40,7 +40,7 @@ In order for this program to scan YouTube videos for closed captioning, you will
 ## BUGS
 When generating the Media report the 2nd and 3rd Pivot Charts do not correctly display the times. In order to fix this you need to right click on column B, hit Format Cells, Choose Custom and then go down and select the [h]:mm:ss format. You will need to do this for both pivot chart sheets to see the time displayed in hours. The default time it is showing is in days.
 
-***This program also only checks pages that are inside of Modules, it does not yet check anything that is not a page.***
+***This program also only checks pages that are inside of Modules and Discussions, it does not yet check Assignments/quizzes.***
 
 ## RECOGNICTION
 Inspired by the VAST program originally created by the University of Central Florida at https://github.com/ucfopen/VAST
