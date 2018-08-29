@@ -19,7 +19,7 @@ function Process_Contents{
 
   $data = Transpose-Data Element, Location, VideoID, Text, Accessibility, IssueSeverity $elementList, $locationList, $videoIDList, $textList, $AccessibilityList, $issueSeverityList
   $Global:ExcelReport = $PSScriptRoot + "\Reports\A11yReport_" + $courseName + ".xlsx"
-  $markRed  = @((New-ConditionalText -Text "Adjust Link Text" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Needs a title" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "No Alt Attribute" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Alt Text May Need Adjustment" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "JavaScript links are not accessible" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Check if header" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Broken Link" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'),(New-ConditionalText -Text "Empty link tag" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'),(New-ConditionalText -Text "No transcript found" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'))
+  $markRed  = @((New-ConditionalText -Text "Adjust Link Text" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Needs a title" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "No Alt Attribute" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Alt Text May Need Adjustment" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "JavaScript links are not accessible" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Check if header" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Broken Link" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'),(New-ConditionalText -Text "Empty link tag" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'),(New-ConditionalText -Text "No transcript found" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'),(New-ConditionalText -Text "Revise table" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'))
   if(-not ($data -eq $NULL)){
     $data | Export-Excel $ExcelReport -ConditionalText $markRed -AutoFilter -AutoSize -Append
   }
@@ -101,27 +101,27 @@ function Process-Images{
       {
         "banner"{
           $Accessibility = "Alt Text May Need Adjustment"
-          AddToArray "Image" $page.title "" $alt $Accessibility
+          AddToArray "Image" $page.title "" "Alt text:`n$alt" $Accessibility
           Break
         }
         "Placeholder"{
           $Accessibility = "Alt Text May Need Adjustment"
-          AddToArray "Image" $page.title "" $alt $Accessibility
+          AddToArray "Image" $page.title "" "Alt text:`n$alt" $Accessibility
           Break
         }
         "\.jpg"{
           $Accessibility = "Alt Text May Need Adjustment"
-          AddToArray "Image" $page.title "" $alt $Accessibility
+          AddToArray "Image" $page.title "" "Alt text:`n$alt" $Accessibility
           Break
         }
         "\.png"{
           $Accessibility = "Alt Text May Need Adjustment"
-          AddToArray "Image" $page.title "" $alt $Accessibility
+          AddToArray "Image" $page.title "" "Alt text:`n$alt" $Accessibility
           Break
         }
         "https"{
           $Accessibility = "Alt Text May Need Adjustment"
-          AddToArray "Image" $page.title "" $alt $Accessibility
+          AddToArray "Image" $page.title "" "Alt text:`n$alt" $Accessibility
           Break
         }
         Default{}
@@ -196,15 +196,40 @@ function Process-Headers{
 
 function Process-Tables{
   if($page_body.contains("<table")){
+    $tableNumber = 0
     $check = $page_body.split("`n")
     for($i = 0; $i -lt $check.length; $i++){
-      $hasHeaders = $FALSE
+      $issueList = @()
       if($check[$i].contains("<table")){
+        $tableNumber++
+        $hasHeaders = $FALSE
+        #Starts going through the whole table line by line
         while(-not ($check[$i].contains("</table>"))){
-          if($check[$i].contains("<th")){
+          #If table contains an heading tags it is an accessibility issue
+          if($check[$i] -match "<h\d"){
+            $issueList += "Heading tags should not be inside of tables"
+          }
+          if($check[$i] -match "colspan="){
+            if($check[$i-1] -match "<tr" -and $check[$i+1] -match "</tr"){
+              $issueList += "Stretched cell should possibly be a <caption> title for the table"
+            }
+          }
+          if($check[$i] -match "<th"){
             $hasHeaders = $TRUE
+            if($check[$i] -notmatch "scope"){
+              $issueList += "Table headers should have either scope=`"row`" or scope=`"col`" for screenreaders"
+            }
           }
           $i++
+        }
+        if(-not $hasHeaders){
+          $issueList += "Table has no headers"
+        }
+        $issueString = ""
+        $issueList | Select-Object -Unique | % {$issueString += "$_`n"}
+        if($issueList.count -eq 0){}
+        else{
+          AddToArray "Table" $page.title  "" "Table number $($tableNumber):`n$issueString" "Revise table"
         }
       }
     }
