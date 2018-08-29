@@ -13,13 +13,18 @@ Function Search-Course{
     Write-Host "Module: $($module.name)" -ForegroundColor Cyan
     $moduleItems = Get-CanvasModuleItem -Course $course_id -ModuleId $module.id
     foreach($item in $ModuleItems){
-      if($item.page_url -eq $NULL){
-        #It is not a page
+      if($item.type -eq "Page"){
+        $page = Get-CanvasCoursesPagesByCourseIdAndUrl -CourseId $course_id -Url $item.page_url
+        $page_body = $page.body
+      }elseif($item.type -eq "Discussion"){
+        $page = Get-CanvasCoursesDiscussionTopicsByCourseIdAndTopicId -CourseId $course_id -TopicId $item.content_id
+        $page_body = $page.message
+      }else{
+        #if its not any of the above just skip it as it is not yet supported
         continue
       }
-      $page = Get-CanvasCoursesPagesByCourseIdAndUrl -CourseId $course_id -Url $item.page_url
       Write-Host $page.title -ForegroundColor Green
-      $page_body = $page.body
+
       if($page_body -eq '' -or $page_body -eq $NULL){
         #Page is empty
         continue
