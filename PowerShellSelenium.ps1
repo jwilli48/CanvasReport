@@ -4,10 +4,16 @@ Joshua Williamson
 
 Functions to ease use of Selenium Webdriver to be used inside of Windows PowerShell for Chrome browser automations.
 #>
-[System.Reflection.Assembly]::LoadFrom("$PSScriptRoot\net40\WebDriver.dll") | Out-Null
-[System.Reflection.Assembly]::LoadFrom("$PSScriptRoot\net40\WebDriver.Support.dll") | Out-Null
-[System.Reflection.Assembly]::LoadFrom("$PSScriptRoot\net40\Selenium.WebDriverBackedSelenium.dll") | Out-Null
-[System.Reflection.Assembly]::LoadFrom("$PSScriptRoot\net40\ThoughtWorks.Selenium.Core.dll") | Out-Null
+if ($MyInvocation.MyCommand.CommandType -eq "ExternalScript"){
+  $ScriptPath = Split-Path -Parent -Path $MyInvocation.MyCommand.Definition
+}
+else{
+  $ScriptPath = Split-Path -Parent -Path ([Environment]::GetCommandLineArgs()[0])
+}
+[System.Reflection.Assembly]::LoadFrom("$ScriptPath\net40\WebDriver.dll") | Out-Null
+[System.Reflection.Assembly]::LoadFrom("$ScriptPath\net40\WebDriver.Support.dll") | Out-Null
+[System.Reflection.Assembly]::LoadFrom("$ScriptPath\net40\Selenium.WebDriverBackedSelenium.dll") | Out-Null
+[System.Reflection.Assembly]::LoadFrom("$ScriptPath\net40\ThoughtWorks.Selenium.Core.dll") | Out-Null
 
 #Opens a browser controlled by Selenium Webdriver as well as initiating important variables used in Selenium
 function Start-Chrome{
