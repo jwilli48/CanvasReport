@@ -160,4 +160,5 @@ function Switch-Frame{
 
 function Close-Chrome{
   $chrome.close()
+  $chrome.dispose()
 }
