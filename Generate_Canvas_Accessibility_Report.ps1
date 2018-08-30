@@ -19,7 +19,8 @@ Search-Course $course_id
 Write-Host 'Formatting Excel Document...' -ForegroundColor Green
 Format-A11yExcel
 
-Get-A11yPivotTables
+#Get-A11yPivotTables
+ConvertTo-A11yExcel
 
 Write-Host "Report Generated" -ForegroundColor Green
 $sw.stop()
