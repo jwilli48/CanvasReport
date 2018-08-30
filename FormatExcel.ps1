@@ -49,15 +49,20 @@ function ConvertTo-A11yExcel{
         AddToCell "Link" "Broken Link" "$($data[$i].Text)" 5 5 5
         break
       }"No transcript found"{
-		AddToCell "Media" "Transcript Needed" "$($data[$i].Text)" 5 5 5
-	  }"Revise table"{
-		AddToCell "Table" "" "$($data[$i].Text)"
-	  }default{
+		    AddToCell "Media" "Transcript Needed" "$($data[$i].Text)" 5 5 5
+        break
+	    }"Revise table"{
+	      AddToCell "Table" "" "$($data[$i].Text)"
+        break
+	    }"<i>/<b> tags should be <em>/<strong> tags"{
+        AddToCell "Semantics" "Bad use of <i> and/or <b>" "$($data[$i].Accessibility)"
+      }default{
         AddToCell "" "" "$($data[$i].Element), $($data[$i].Text)"
       }
     }
     $rowNumber++
   }
+
   $template.Workbook.Worksheets[1].ConditionalFormatting[0].LowValue.Color = [System.Drawing.Color]::FromArgb(255,146,208,80)
   $template.Workbook.Worksheets[1].ConditionalFormatting[0].MiddleValue.Color = [System.Drawing.Color]::FromArgb(255,255,213,5)
   $template.Workbook.Worksheets[1].ConditionalFormatting[0].HighValue.Color = [System.Drawing.Color]::FromArgb(255,255,71,71)
@@ -107,8 +112,9 @@ function Format-MediaExcel1{
 
 function Format-MediaExcel2{
   $excel = Export-Excel $ExcelReport -PassThru
-  Set-Format -WorkSheet $excel.Workbook.WorkSheets["MediaLength"] -Range "B:B" -NumberFormat '[h]:mm:ss'
-  Set-Format -WorkSheet $excel.Workbook.WorkSheets["MediaLengthByLocation"] -Range "B:B" -NumberFormat '[h]:mm:ss'
+  $excel.Workbook.Worksheets[3].PivotTables[0].DataFields[0].Format = "[h]:mm:ss"
+  $excel.Workbook.Worksheets[4].PivotTables[0].DataFields[0].Format = "[h]:mm:ss"
+  $excel.Workbook.Worksheets[5].PivotTables[0].DataFields[0].Format = "[h]:mm:ss"
   Close-ExcelPackage $excel
 }
 
