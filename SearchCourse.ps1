@@ -42,7 +42,7 @@ function Search-Directory{
   )
 
   $Global:courseName = $Directory.split('\')[-2]
-  $course_files = Get-ChildItem "$directory\*.html"
+  $course_files = Get-ChildItem "$directory\*.html" -Exclude '*old*','*ImageGallery*', '*CourseMedia*'
   if($course_files -eq $NULL){
     Write-Host "ERROR: Directory input is empty"
   }else{
