@@ -1,5 +1,3 @@
-Import-Module ./Util.ps1 -Force
-
 function Process_Contents{
   param(
     [string]$page_body
@@ -16,12 +14,18 @@ function Process_Contents{
   Process-Images
   Process-Headers
   Process-Tables
+  Process-Semantics
 
   $data = Transpose-Data Element, Location, VideoID, Text, Accessibility, IssueSeverity $elementList, $locationList, $videoIDList, $textList, $AccessibilityList, $issueSeverityList
   $Global:ExcelReport = $PSScriptRoot + "\Reports\A11yReport_" + $courseName + ".xlsx"
-  $markRed  = @((New-ConditionalText -Text "Adjust Link Text" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Needs a title" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "No Alt Attribute" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Alt Text May Need Adjustment" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "JavaScript links are not accessible" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Check if header" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Broken Link" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'),(New-ConditionalText -Text "Empty link tag" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'),(New-ConditionalText -Text "No transcript found" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'),(New-ConditionalText -Text "Revise table" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'))
+
+  ###ConditionalText no longer used, changed to using a Template instead
+  #$markRed  = @((New-ConditionalText -Text "Adjust Link Text" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Needs a title" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "No Alt Attribute" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Alt Text May Need Adjustment" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "JavaScript links are not accessible" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Check if header" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Broken Link" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'),(New-ConditionalText -Text "Empty link tag" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'),(New-ConditionalText -Text "No transcript found" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'),(New-ConditionalText -Text "Revise table" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'))
+
+  #$hightlight = @((New-ConditionalText -Text "<i> tags should be <em> tags" -BackgroundColor '#ffff8b' -ConditionalTextColor '#000000' ),(New-ConditionalText -Text "<b> tags should be <strong> tags" -BackgroundColor '#ffff8b' -ConditionalTextColor '#000000' ))
+
   if(-not ($data -eq $NULL)){
-    $data | Export-Excel $ExcelReport -ConditionalText $markRed -AutoFilter -AutoSize -Append
+    $data | Export-Excel $ExcelReport <#-ConditionalText $markRed, $highlight#> -AutoFilter -AutoSize -Append
   }
 }
 
@@ -215,7 +219,7 @@ function Process-Tables{
           }
           if($check[$i] -match "colspan="){
             if($check[$i-1] -match "<tr" -and $check[$i+1] -match "</tr"){
-              $issueList += "Stretched cell should possibly be a <caption> title for the table"
+              $issueList += "Stretched cell(s) should possibly be a <caption> title for the table"
             }
           }
           if($check[$i] -match "<th"){
@@ -224,14 +228,18 @@ function Process-Tables{
               $issueList += "Table headers should have either scope=`"row`" or scope=`"col`" for screenreaders"
             }
           }
+          if($check[$i] -match "<td"){
+            if($check[$i] -match "scope"){
+              $issueList += "Non-header table cells should not have scope attributes"
+            }
+          }
           if($check[$i] -match "<tr"){
             $rowNumber++
           }elseif($check[$i] -match "<th" -or $check[$i] -match "<td"){
             $columnNumber++
           }elseif($check[$i] -match "</tr>"){
-            if($check[$i] -match "</table>"){
-
-            }else{
+            if($check[$i+1] -notmatch "<tr"){}
+            else{
               $columnNumber = 0
             }
           }
@@ -255,6 +263,20 @@ function Process-Tables{
   }
 }
 
+function Process-Semantics{
+  $i_tag_list = $page_body | Select-String -pattern "<i.*?>(.*?)</i>" -AllMatches | % {$_.Matches.Groups[1].Value}
+  $b_tag_list = $page_body | Select-String -pattern "<b.*?>(.*?)</b>" -AllMatches | % {$_.Matches.Groups[1].Value}
+  $i = 0
+  foreach($i_tag in $i_tag_list){
+    $i++
+  }
+  foreach($b_tag in $b_tag_list){
+    $i++
+  }
+  if($i -gt 0){
+    AddToArray "<i> or <b> tags" $page.title "" "Page contains <i> or <b> tags" "<i>/<b> tags should be <em>/<strong> tags"
+  }
+}
 function AddToArray{
   param(
     [string]$element,

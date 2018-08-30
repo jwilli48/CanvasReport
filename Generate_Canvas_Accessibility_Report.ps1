@@ -7,13 +7,22 @@ Import-Module ./FormatExcel.ps1 -Force
 Import-Module ./Notifications.ps1 -Force
 Import-Module ./SearchCourse.ps1 -Force
 
-$course_id = Read-Host "Enter Course ID"
+$course_id = Read-Host "Enter Canvas Course ID or path to course HTML files"
+$directory = $FALSE
+
+if($course_id -match "[A-Z]:\\"){
+  $directory = $true
+}
 
 $sw = [Diagnostics.Stopwatch]::new()
 $sw.start()
 
 Get-Modules
-Search-Course $course_id
+if($directory){
+  Search-Directory $course_id
+}else{
+  Search-Course $course_id
+}
 
 #Excel formatting
 Write-Host 'Formatting Excel Document...' -ForegroundColor Green

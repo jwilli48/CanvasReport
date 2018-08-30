@@ -1,5 +1,3 @@
-Import-Module ./Util.ps1 -Force
-
 function Process_Contents{
   param(
     [string]$page_body
@@ -16,6 +14,7 @@ function Process_Contents{
 
   Process-Links
   Process-Iframes
+  Process-BrightcoveVideoHTML
 
   $data = Transpose-Data Element, Location, VideoID, VideoLength, Text, Transcript, MediaCount $elementList, $locationList, $videoIDList, $videoLengthList, $textList, $transcriptAvailability, $mediaCountList
   $markRed = @((New-ConditionalText -Text "No Title" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'))
@@ -28,14 +27,15 @@ function Process_Contents{
 function Process-Links{
   $link_list = $page_body | Select-String -pattern "<a.*?>.*?</a>" -AllMatches | % {$_.Matches.Value}
   $href_list = $link_list | Select-String -pattern 'href="(.*?)"' -AllMatches | % {$_.Matches.Groups[1].Value}
-  for($i = 0; $i -lt $href_list.length; $i++){
-    switch -regex ($href_list[$i])
+  foreach($href in $href_list){
+    switch -regex ($href)
     {
       "youtu\.?be" {
-        if($href_list[$i].contains('=')){
-          $VideoID = $href_list[$i].split('=')[-1]
+        if($href.contains('=')){
+          $href = $href.split("&")[0]
+          $VideoID = $href.split('=')[-1]
         }else{
-          $VideoID = $href_list[$i].split('/')[-1]
+          $VideoID = $href.split('/')[-1]
         }
         try{
           $video_Length = [timespan]::fromseconds((Get-GoogleVideoSeconds -VideoID $VideoID)).toString("hh\:mm\:ss")
@@ -43,7 +43,7 @@ function Process-Links{
           Write-Host "Video not found"
           $video_length = "00:00:00"
         }
-        AddToArray "Youtube Link" $page.title $VideoID $video_Length $href_list[$i] "Yes"; break
+        AddToArray "Youtube Link" $page.title $VideoID $video_Length $href "Yes"; break
       }
       Default {}
     }
@@ -111,6 +111,30 @@ function Process-Iframes{
     else{
       AddToArray "Iframe" $page.title "" "00:00:00" $title "N\A"
     }
+  }
+}
+
+function Process-BrightcoveVideoHTML{
+  $brightcove_list = $page_body | Select-String -pattern '<div id="[^\d]*(\d{13})"' -Allmatches | % {$_.Matches.Value}
+  $id_list = $brightcove_list | Select-String -pattern '\d{13}' -AllMatches | % {$_.matches.Value}
+  foreach($id in $id_list){
+    $video_Length = (Get-BrightcoveVideoLength $id).toString('hh\:mm\:ss')
+    $transcriptCheck = $page_body.split("`n")
+    $i = 0
+    while($transcriptCheck[$i] -notmatch "$id"){$i++}
+    $transcript = $FALSE
+    for($j = 0; $j -lt 5; $j++){
+      if($transcript[$i] -eq $NULL){
+        #End of file
+        break
+      }elseif($transcript[$i].contains("transcript")){
+        $transcript = $TRUE
+        break
+      }
+    }
+    if($transcript){$transcript = "Yes"}
+    else{$transcript = "No"}
+    AddToArray "Brightcove Video" $page.title $id $video_Length $title $transcript
   }
 }
 

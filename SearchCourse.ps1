@@ -1,3 +1,5 @@
+Import-Module ./Util.ps1 -Force
+
 Function Search-Course{
   param(
     $course_id
@@ -27,6 +29,34 @@ Function Search-Course{
 
       if($page_body -eq '' -or $page_body -eq $NULL){
         #Page is empty
+        continue
+      }
+      Process_Contents $page_body
+    }
+  }
+}
+
+function Search-Directory{
+  param(
+    [string]$directory
+  )
+
+  $Global:courseName = $Directory.split('\')[-2]
+  $course_files = Get-ChildItem "$directory\*.html"
+  if($course_files -eq $NULL){
+    Write-Host "ERROR: Directory input is empty"
+  }else{
+    $i = 0
+    foreach($file in $course_files){
+      $i++
+      Write-Progress -Activity "Checking pages" -Status "Progress:" -PercentComplete ($i/$course_files.length * 100)
+
+      $file_content = Get-Content -Encoding UTF8 -Path $file.PSpath -raw
+      $page = Transpose-Data body, title $file_content, $file.name
+      $page_body = $page.body
+      Write-Host $page.title -ForegroundColor Green
+
+      if($page_body -eq '' -or $page_body -eq $NULL){
         continue
       }
       Process_Contents $page_body
