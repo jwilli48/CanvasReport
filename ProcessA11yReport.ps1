@@ -203,6 +203,8 @@ function Process-Tables{
     for($i = 0; $i -lt $check.length; $i++){
       $issueList = @()
       if($check[$i].contains("<table")){
+        $rowNumber = 0
+        $columnNumber = 0
         $tableNumber++
         $hasHeaders = $FALSE
         #Starts going through the whole table line by line
@@ -222,10 +224,25 @@ function Process-Tables{
               $issueList += "Table headers should have either scope=`"row`" or scope=`"col`" for screenreaders"
             }
           }
+          if($check[$i] -match "<tr"){
+            $rowNumber++
+          }elseif($check[$i] -match "<th" -or $check[$i] -match "<td"){
+            $columnNumber++
+          }elseif($check[$i] -match "</tr>"){
+            if($check[$i] -match "</table>"){
+
+            }else{
+              $columnNumber = 0
+            }
+          }
           $i++
         }
         if(-not $hasHeaders){
-          $issueList += "Table has no headers"
+          if($rowNumber -lt 3 -and $columnNumber -lt 3){
+
+          }else{
+            $issueList += "Table has no headers"
+          }
         }
         $issueString = ""
         $issueList | Select-Object -Unique | % {$issueString += "$_`n"}
