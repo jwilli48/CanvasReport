@@ -79,7 +79,7 @@ function Process-Iframes{
       AddToArray "Youtube Video" $page.title $video_ID $video_Length $title "Yes"
     }
     elseif($iframe.contains('brightcove')){
-      $Video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].value}).split('=')[-1]
+      $Video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].value}).split('=')[-1].split("&")[0]
       $video_Length = (Get-BrightcoveVideoLength $Video_ID).toString('hh\:mm\:ss')
       $transcript = Get-TranscriptAvailable $iframe
       if($transcript){$transcript = "Yes"}
