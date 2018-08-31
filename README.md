@@ -48,7 +48,7 @@ Inspired by the VAST program originally created by the University of Central Flo
 
 Able to work due to the Canvas APIs for PowerShell project at https://github.com/squid808/CanvasApis
 
-	- The code I use from that project is contained in the PoshCanvasNew.ps1 file (I just cut out all of the functions I do not use to make the file smaller)
+	* The code I use from that project is contained in the PoshCanvasNew.ps1 file (I just cut out all of the functions I do not use to make the file smaller)
 
 # Accessibility Report Generator
 It does not catch every accessibility issue. For example:
