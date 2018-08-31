@@ -21,6 +21,12 @@ Function Search-Course{
       }elseif($item.type -eq "Discussion"){
         $page = Get-CanvasCoursesDiscussionTopicsByCourseIdAndTopicId -CourseId $course_id -TopicId $item.content_id
         $page_body = $page.message
+      }elseif($item.type -eq "Assignment"){
+        $page = Get-CanvasCoursesAssignmentsByCourseIdAndId -CourseId $course_id -Id $item.content_id
+        $page_body = $page.description
+      }elseif($item.type -eq "Quiz"){
+        $page = Get-CanvasQuizzesById -CourseId $course_id -Id $item.content_id
+        $page_body = $page.description
       }else{
         #if its not any of the above just skip it as it is not yet supported
         continue
@@ -32,6 +38,17 @@ Function Search-Course{
         continue
       }
       Process_Contents $page_body
+      if($item.type -eq "Quiz"){
+        Write-Host "Checking quiz questions..." -ForegroundColor Green
+        $quizQuestions = Get-CanvasQuizQuestion -CourseId $course_id -QuizId $item.content_id
+        foreach($question in $quizQuestions){
+          Process_Contents $question.question_text
+          foreach($answer in $question.answers){
+            Process_Contents $answer.html
+            Process_Contents $answer.comments_html
+          }
+        }
+      }
     }
   }
 }
