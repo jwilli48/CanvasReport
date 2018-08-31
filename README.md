@@ -41,7 +41,6 @@ In order for this program to scan YouTube videos for closed captioning, you will
 
 ## BUGS
 
-***This program also only checks pages that are inside of Modules and Discussions, it does not yet check Assignments/quizzes.***
 
 ## RECOGNICTION
 Inspired by the VAST program originally created by the University of Central Florida at https://github.com/ucfopen/VAST
@@ -56,6 +55,9 @@ It does not catch every accessibility issue. For example:
 2. Anything I haven't seen before or possibly just forget to add a check for
 
 ***This check can not tell if things are inaccessible if they rely on context*** (ex. it will only check if a table has any headers, not if the headers are correct or not)
+
+What it can not check:
+1. Rubrics within Quizzes / Assignments / Asessments as they are not stored as an HTML table
 
 # File directory
 1. Files needed for accessibility report:
