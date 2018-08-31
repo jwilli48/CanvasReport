@@ -246,7 +246,7 @@ function Process-Tables{
           $i++
         }
         if(-not $hasHeaders){
-          if($rowNumber -lt 3 -and $columnNumber -lt 3){
+          if(($rowNumber -le 3) -and ($columnNumber -lt 3)){
 
           }else{
             $issueList += "Table has no headers"

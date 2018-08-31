@@ -53,6 +53,7 @@ Able to work due to the Canvas APIs for PowerShell project at https://github.com
 # Accessibility Report Generator
 It does not catch every accessibility issue. For example:
 1. It can't check anything that appears after JavaScript is run on the page
+2. Anything I haven't seen before or possibly just forget to add a check for
 
 ***This check can not tell if things are inaccessible if they rely on context*** (ex. it will only check if a table has any headers, not if the headers are correct or not)
 
