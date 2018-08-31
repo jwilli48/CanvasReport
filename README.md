@@ -45,6 +45,7 @@ In order for this program to scan YouTube videos for closed captioning, you will
 
 ## RECOGNICTION
 Inspired by the VAST program originally created by the University of Central Florida at https://github.com/ucfopen/VAST
+
 Able to work due to the Canvas APIs for PowerShell project at https://github.com/squid808/CanvasApis
 	- The code I use from that project is contained in the PoshCanvasNew.ps1 file (I just cut out all of the functions I do not use to make the file smaller)
 
