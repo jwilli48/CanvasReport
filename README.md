@@ -1,4 +1,6 @@
 # Canvas Report Generator
+This program is now able to run on a directory of HTML files and allows you to enter either a Canvas course ID or a directory path
+
 ## DEPENDANCIES
 They will be automatically installed when first running the program.
 1. ImportExcel Module
@@ -38,12 +40,13 @@ In order for this program to scan YouTube videos for closed captioning, you will
 4. Create an API key
 
 ## BUGS
-When generating the Media report the 2nd and 3rd Pivot Charts do not correctly display the times. In order to fix this you need to right click on column B, hit Format Cells, Choose Custom and then go down and select the [h]:mm:ss format. You will need to do this for both pivot chart sheets to see the time displayed in hours. The default time it is showing is in days.
 
 ***This program also only checks pages that are inside of Modules and Discussions, it does not yet check Assignments/quizzes.***
 
 ## RECOGNICTION
 Inspired by the VAST program originally created by the University of Central Florida at https://github.com/ucfopen/VAST
+Able to work due to the Canvas APIs for PowerShell project at https://github.com/squid808/CanvasApis
+	- The code I use from that project is contained in the PoshCanvasNew.ps1 file (I just cut out all of the functions I do not use to make the file smaller)
 
 # Accessibility Report Generator
 It does not catch every accessibility issue. For example:
