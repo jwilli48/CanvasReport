@@ -48,7 +48,7 @@ function ConvertTo-A11yExcel{
         break
       }
       "JavaScript links are not accessible"{
-        AddToCell "Link" "" "$($data[$i].Text) is a javascript link" 3 3 3
+        AddToCell "Link" "" "$($data[$i].Text)`n$($data[$i].Accessibility)" 3 3 3
         break
       }
       "Check if header is meant to be invisible and is not a duplicate"{

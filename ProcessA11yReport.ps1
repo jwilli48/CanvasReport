@@ -15,6 +15,7 @@ function Process_Contents{
   Process-Headers
   Process-Tables
   Process-Semantics
+  Process-VideoTags
 
   $data = Transpose-Data Element, Location, VideoID, Text, Accessibility, IssueSeverity $elementList, $locationList, $videoIDList, $textList, $AccessibilityList, $issueSeverityList
   $Global:ExcelReport = $PSScriptRoot + "\Reports\A11yReport_" + $courseName + ".xlsx"
@@ -77,7 +78,7 @@ function Process-Links{
       "\bhere\b" {
         AddToArray "Link" $item.title "" $text "Adjust Link Text"; break
       }
-      "Click Here" {
+      "Click" {
         AddToArray "Link" $item.title "" $text "Adjust Link Text"; break
       }
       "http"{
@@ -88,6 +89,11 @@ function Process-Links{
       }
       "www\."{
         AddToArray "Link" $item.title "" $text "Adjust Link Text"; break
+      }
+      "Link"{
+        if(-not ($text -match "Links to an external site")){
+        AddToArray "Link" $item.title "" $text "Adjust Link Text"; break
+        }
       }
       Default {}
     }
@@ -149,7 +155,7 @@ function Process-Iframes{
         AddToArray "Youtube Video" $item.title $video_ID $title $Accessibility
       }
       elseif($iframe.contains('brightcove')){
-        $Video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].value}).split('=')[-1]
+        $Video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].value}).split('=')[-1].split("&")[0]
         AddToArray "Brightcove Video" $item.title $video_ID $title $Accessibility
       }
       elseif($iframe.contains('H5P')){
@@ -174,7 +180,7 @@ function Process-Iframes{
   #Check for transcripts
   $i = 1;
   foreach($iframe in $iframeList){
-    if($iframe.contains('youtube') -or $iframe.contains('brightcove') -or $iframe.contains('byu.mediasite') -or $iframe.contains('Panopto')){
+    if($iframe.contains('brightcove') -or $iframe.contains('byu.mediasite') -or $iframe.contains('Panopto')){
       if(-not (Get-TranscriptAvailable $iframe)){
         AddToArray "Transcript" "$($item.title)" "" "Video number $i on page" "No transcript found"
       }
@@ -277,6 +283,21 @@ function Process-Semantics{
     AddToArray "<i> or <b> tags" $item.title "" "Page contains <i> or <b> tags" "<i>/<b> tags should be <em>/<strong> tags"
   }
 }
+
+function Process-VideoTags{
+    $videotag_list = $page_body | Select-String -pattern '<video.*?>.*?</video>' -AllMatches | %{$_.Matches.Value}
+    foreach($video in $videotag_list){
+      $src = $video | Select-String -pattern 'src="(.*?)"' -AllMatches | % {$_.Matches.Groups[1].Value}
+      $videoID = $src.split('=')[1].split("&")[0]
+      $transcript = Get-TranscriptAvailable $video
+      if($transcript){}
+      else{
+        AddToArray "Inline Media Video" $item.title $videoID "Inline Media Video`n" "No transcript found"
+      }
+
+    }
+}
+
 function AddToArray{
   param(
     [string]$element,

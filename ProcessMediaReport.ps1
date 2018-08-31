@@ -15,6 +15,7 @@ function Process_Contents{
   Process-Links
   Process-Iframes
   Process-BrightcoveVideoHTML
+  Process-VideoTags
 
   $data = Transpose-Data Element, Location, VideoID, VideoLength, Text, Transcript, MediaCount $elementList, $locationList, $videoIDList, $videoLengthList, $textList, $transcriptAvailability, $mediaCountList
   $markRed = @((New-ConditionalText -Text "No Title" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'))
@@ -112,6 +113,18 @@ function Process-Iframes{
       AddToArray "Iframe" $item.title "" "00:00:00" $title "N\A"
     }
   }
+}
+
+function Process-VideoTags{
+    $videotag_list = $page_body | Select-String -pattern '<video.*?>.*?</video>' -AllMatches | %{$_.Matches.Value}
+    foreach($video in $videotag_list){
+      $src = $video | Select-String -pattern 'src="(.*?)"' -AllMatches | % {$_.Matches.Groups[1].Value}
+      $videoID = $src.split('=')[1].split("&")[0]
+      $transcript = Get-TranscriptAvailable $video
+      if($transcript){$transcript = "Yes"}
+      else{$transcript = "No"}
+      AddToArray "Inline Media Video" $item.title $videoID "00:00:00" "Inline Media:`nUnable to find title or video length for this type of video" $transcript
+    }
 }
 
 function Process-BrightcoveVideoHTML{
