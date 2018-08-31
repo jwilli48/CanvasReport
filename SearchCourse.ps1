@@ -40,12 +40,20 @@ Function Search-Course{
       Process_Contents $page_body
       if($item.type -eq "Quiz"){
         Write-Host "Checking quiz questions..." -ForegroundColor Green
-        $quizQuestions = Get-CanvasQuizQuestion -CourseId $course_id -QuizId $item.content_id
-        foreach($question in $quizQuestions){
-          Process_Contents $question.question_text
-          foreach($answer in $question.answers){
-            Process_Contents $answer.html
-            Process_Contents $answer.comments_html
+        try{
+          $quizQuestions = Get-CanvasQuizQuestion -CourseId $course_id -QuizId $item.content_id
+          foreach($question in $quizQuestions){
+            Process_Contents $question.question_text
+            foreach($answer in $question.answers){
+              Process_Contents $answer.html
+              Process_Contents $answer.comments_html
+            }
+          }
+        }catch{
+          if($_ -match "Unauthorized"){
+            Write-Host "ERROR: (401) Unauthorized, can not search quiz questions. Skipping..." -ForegroundColor Red
+          }else{
+            Write-Host $_ -ForegroundColor Red
           }
         }
       }
