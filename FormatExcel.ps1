@@ -66,6 +66,8 @@ function ConvertTo-A11yExcel{
         break
 	    }"<i>/<b> tags should be <em>/<strong> tags"{
         AddToCell "Semantics" "Bad use of <i> and/or <b>" "$($data[$i].Accessibility)"
+      }"Empty link tag"{
+        AddToCell "Link" "Broken Link" "$($data[$i].Text)"
       }default{
         AddToCell "" "" "$($data[$i].Element), $($data[$i].Text)"
       }
