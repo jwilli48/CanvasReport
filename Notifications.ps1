@@ -1,4 +1,9 @@
 function Send-Notification{
+  <#
+  .DESCRIPTION
+
+  Sends a desktop notification with the name of the course, time it took, and a button to open the report.
+  #>
   $ButtonContent = @{
     Content = "Open Report"
     Arguments = $ExcelReport

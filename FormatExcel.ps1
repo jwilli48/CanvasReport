@@ -1,5 +1,10 @@
 #ACCESSIBILITY REPORT FORMATTING
 function Format-A11yExcel{
+  <#
+  .DESCRIPTION
+
+  Formats the excel sheet, which is actually not needed anymore as we now use a template
+  #>
   $excel = Export-Excel $ExcelReport -PassThru
   if(-not ($excel -eq $NULL)){
     $excel.Workbook.Worksheets["Sheet1"].Column(1).Width = 25
@@ -12,6 +17,11 @@ function Format-A11yExcel{
 }
 
 function ConvertTo-A11yExcel{
+  <#
+  .DESCRIPTION
+
+  Moves the default excel sheet made into the template excel sheet. Takes the each row of default excel sheet then adds it to the correct table with the correct values in the template then saves over the old one.
+  #>
   $template = Open-ExcelPackage -Path "$PsScriptRoot\CAR - Accessibility Review Template.xlsx"
   $data = Import-Excel -path $ExcelReport
   $cell = $template.Workbook.Worksheets[1].Cells
@@ -73,6 +83,11 @@ function ConvertTo-A11yExcel{
 }
 
 function AddToCell{
+  <#
+  .DESCRIPTION
+
+  Used in the ConvertTo-A11yExcel function, used to simplify adding data to the correct cells.
+  #>
   param(
     [string]$issueType,
     [string]$DescriptiveError,
@@ -90,12 +105,22 @@ function AddToCell{
 }
 
 function Get-A11yPivotTables{
+  <#
+  .DESCRIPTION
+
+  Was used when we didn't have the template, it added simple Pivot charts and tables to the excel sheet to give useful information at a glance.
+  #>
   Export-Excel $ExcelReport -Numberformat '#############' -IncludePivotTable -IncludePivotChart -PivotRows "A" -PivotData @{F='sum'} -ChartType PieExploded3d -ShowCategory -ShowPercent -PivotTableName 'IssueSeverity'
   Export-Excel $ExcelReport -Numberformat '#############' -IncludePivotTable -IncludePivotChart -PivotRows "Location" -PivotData @{IssueSeverity='sum'} -ChartType PieExploded3d -ShowPercent -PivotTableName 'IssueLocations' -NoLegend
 }
 
 #MEDIA REPORT FORMATTING
 function Format-MediaExcel1{
+  <#
+  .DESCRIPTION
+
+  Formats the media excel sheet which we do not have a template for. Makes sure that some of the rows do not become to long, gives it a max width and makes it so the column has text wrap. Also makes sure the number format is correct for both the video ID numbers in column C, and for the video lengths in column D
+  #>
   $excel = Export-Excel $ExcelReport -PassThru
   if(-not ($excel -eq $NULL)){
     $excel.Workbook.Worksheets["Sheet1"].Column(4).Width = 25
@@ -111,6 +136,11 @@ function Format-MediaExcel1{
 }
 
 function Format-MediaExcel2{
+  <#
+  .DESCRIPTION
+
+  After the pivot tables are added there are some additional formatting needed for those tables. The default time for the tables is in days and I want it in hours.
+  #>
   $excel = Export-Excel $ExcelReport -PassThru
   $excel.Workbook.Worksheets[3].PivotTables[0].DataFields[0].Format = "[h]:mm:ss"
   $excel.Workbook.Worksheets[4].PivotTables[0].DataFields[0].Format = "[h]:mm:ss"
@@ -119,6 +149,15 @@ function Format-MediaExcel2{
 }
 
 function Get-MediaPivotTables{
+  <#
+  .DESCRIPTION
+
+  Adds a bunch of tables and charts for quick information:
+  1. Table and Chart of how many of each type of media there was found
+  2. Table and Chart of how total time for each type of media
+  3. Table and Chart of total video time per location in the course
+  4. Table and Chart of total time based on transcripts found/not found. Can also be split to show more details, such as within the videos that don't have transcripts you can split it to see how much time for each media type.
+  #>
   Export-Excel $ExcelReport -IncludePivotTable -IncludePivotChart -PivotRows "Element" -PivotData @{MediaCount='sum'} -ChartType PieExploded3d -ShowCategory -ShowPercent -PivotTableName "MediaTypes"
   Export-Excel $ExcelReport -IncludePivotTable -IncludePivotChart -PivotRows "Element" -PivotData @{VideoLength='sum'} -ChartType PieExploded3d -ShowPercent -PivotTableName "MediaLength"
   Export-Excel $ExcelReport -IncludePivotTable -IncludePivotChart -PivotRows "Location" -PivotData @{VideoLength='sum'} -ChartType PieExploded3d -ShowPercent -PivotTableName "MediaLengthByLocation" -NoLegend

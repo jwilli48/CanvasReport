@@ -1,5 +1,10 @@
 #Brightcove
 function Set-BrightcoveCredentials{
+  <#
+  .DESCRIPTION
+
+  If they don't have credentials, will ask them for some and save a file with username and a secure string password, then it will set the username and password to the variables saved in text files.
+  #>
   if(-not (Test-Path "$PSScriptRoot\Passwords")){
     New-Item -Path "$PsScriptRoot\Passwords" -ItemType Directory
   }
