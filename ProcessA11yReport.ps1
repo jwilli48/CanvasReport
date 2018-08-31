@@ -33,9 +33,9 @@ function Process-Links{
   $link_list = $page_body | Select-String -pattern "<a.*?>.*?</a>" -AllMatches | % {$_.Matches.Value}
   foreach($link in $link_list){
     if($link.contains('onlick')){
-      AddToArray "JavaScript Link" $page.title "" $link "JavaScript links are not accessible"
+      AddToArray "JavaScript Link" $item.title "" $link "JavaScript links are not accessible"
     }elseif(-not $link.contains('href')){
-      AddToArray "Link" $page.title "" $link "Empty link tag"
+      AddToArray "Link" $item.title "" $link "Empty link tag"
     }
   }
   $href_list = $link_list | Select-String -pattern 'href="(.*?)"' -AllMatches | % {$_.Matches.Groups[1].Value}
@@ -57,7 +57,7 @@ function Process-Links{
         }catch{
           #There is also a SecureChannelFailure error status but it seems that for the majority of cases those still work when clicking the link manually
           if($_.Exception.Status -eq "SendFailure"){
-            AddToArray "Link" $page.title "" $href "Broken link"
+            AddToArray "Link" $item.title "" $href "Broken link"
           }
         }
       }
@@ -72,22 +72,22 @@ function Process-Links{
         break
       }
       $NULL{
-        AddToArray "Link" $page.title "" "Invisble link with no text" "Adjust Link Text"; break
+        AddToArray "Link" $item.title "" "Invisble link with no text" "Adjust Link Text"; break
       }
       "\bhere\b" {
-        AddToArray "Link" $page.title "" $text "Adjust Link Text"; break
+        AddToArray "Link" $item.title "" $text "Adjust Link Text"; break
       }
       "Click Here" {
-        AddToArray "Link" $page.title "" $text "Adjust Link Text"; break
+        AddToArray "Link" $item.title "" $text "Adjust Link Text"; break
       }
       "http"{
-        AddToArray "Link" $page.title "" $text "Adjust Link Text"; break
+        AddToArray "Link" $item.title "" $text "Adjust Link Text"; break
       }
       "https"{
-        AddToArray "Link" $page.title "" $text "Adjust Link Text"; break
+        AddToArray "Link" $item.title "" $text "Adjust Link Text"; break
       }
       "www\."{
-        AddToArray "Link" $page.title "" $text "Adjust Link Text"; break
+        AddToArray "Link" $item.title "" $text "Adjust Link Text"; break
       }
       Default {}
     }
@@ -100,34 +100,34 @@ function Process-Images{
     $alt = ""
     if(-not $img.contains('alt')){
       $Accessibility = "No Alt Attribute"
-      AddToArray "Image" $page.title "" $img $Accessibility
+      AddToArray "Image" $item.title "" $img $Accessibility
     }else{
       $alt = $img | Select-String -pattern 'alt="(.*?)"' -AllMatches | % {$_.Matches.Groups[1].Value}
       switch -regex ($alt)
       {
         "banner"{
           $Accessibility = "Alt Text May Need Adjustment"
-          AddToArray "Image" $page.title "" "Alt text:`n$alt" $Accessibility
+          AddToArray "Image" $item.title "" "Alt text:`n$alt" $Accessibility
           Break
         }
         "Placeholder"{
           $Accessibility = "Alt Text May Need Adjustment"
-          AddToArray "Image" $page.title "" "Alt text:`n$alt" $Accessibility
+          AddToArray "Image" $item.title "" "Alt text:`n$alt" $Accessibility
           Break
         }
         "\.jpg"{
           $Accessibility = "Alt Text May Need Adjustment"
-          AddToArray "Image" $page.title "" "Alt text:`n$alt" $Accessibility
+          AddToArray "Image" $item.title "" "Alt text:`n$alt" $Accessibility
           Break
         }
         "\.png"{
           $Accessibility = "Alt Text May Need Adjustment"
-          AddToArray "Image" $page.title "" "Alt text:`n$alt" $Accessibility
+          AddToArray "Image" $item.title "" "Alt text:`n$alt" $Accessibility
           Break
         }
         "https"{
           $Accessibility = "Alt Text May Need Adjustment"
-          AddToArray "Image" $page.title "" "Alt text:`n$alt" $Accessibility
+          AddToArray "Image" $item.title "" "Alt text:`n$alt" $Accessibility
           Break
         }
         Default{}
@@ -146,28 +146,28 @@ function Process-Iframes{
 
       if($iframe.contains('youtube')){
         $Video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].value}).split('/')[4].split('?')[0]
-        AddToArray "Youtube Video" $page.title $video_ID $title $Accessibility
+        AddToArray "Youtube Video" $item.title $video_ID $title $Accessibility
       }
       elseif($iframe.contains('brightcove')){
         $Video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].value}).split('=')[-1]
-        AddToArray "Brightcove Video" $page.title $video_ID $title $Accessibility
+        AddToArray "Brightcove Video" $item.title $video_ID $title $Accessibility
       }
       elseif($iframe.contains('H5P')){
-        AddToArray "H5P" $page.title "" $title $Accessibility
+        AddToArray "H5P" $item.title "" $title $Accessibility
       }
       elseif($iframe.contains('byu.mediasite')){
         $video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].Value}).split('/')[-1]
         if($video_ID -eq ""){
           $video_id = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].Value}).split('/')[-2]
         }
-        AddToArray "BYU Mediasite Video" $page.title $video_ID $title $Accessibility
+        AddToArray "BYU Mediasite Video" $item.title $video_ID $title $Accessibility
       }
       elseif($iframe.contains('Panopto')){
         $video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].Value}).split('=').split('&')[1]
-        AddToArray "Panopto Video" $page.title $video_ID $title $Accessibility
+        AddToArray "Panopto Video" $item.title $video_ID $title $Accessibility
       }
       else{
-        AddToArray "Iframe" $page.title "" $title $Accessibility
+        AddToArray "Iframe" $item.title "" $title $Accessibility
       }
     }
   }
@@ -176,7 +176,7 @@ function Process-Iframes{
   foreach($iframe in $iframeList){
     if($iframe.contains('youtube') -or $iframe.contains('brightcove') -or $iframe.contains('byu.mediasite') -or $iframe.contains('Panopto')){
       if(-not (Get-TranscriptAvailable $iframe)){
-        AddToArray "Transcript" "$($page.title)" "" "Video number $i on page" "No transcript found"
+        AddToArray "Transcript" "$($item.title)" "" "Video number $i on page" "No transcript found"
       }
     }
     $i++
@@ -193,7 +193,7 @@ function Process-Headers{
     {
       'class=".*?screenreader-only.*?"'{
         $accessibility = "Check if header is meant to be invisible and is not a duplicate"
-        AddToArray "Header Level $headerLevel" $page.title "" $header $Accessibility
+        AddToArray "Header Level $headerLevel" $item.title "" $header $Accessibility
         break
       }
     }
@@ -256,7 +256,7 @@ function Process-Tables{
         $issueList | Select-Object -Unique | % {$issueString += "$_`n"}
         if($issueList.count -eq 0){}
         else{
-          AddToArray "Table" $page.title  "" "Table number $($tableNumber):`n$issueString" "Revise table"
+          AddToArray "Table" $item.title  "" "Table number $($tableNumber):`n$issueString" "Revise table"
         }
       }
     }
@@ -274,7 +274,7 @@ function Process-Semantics{
     $i++
   }
   if($i -gt 0){
-    AddToArray "<i> or <b> tags" $page.title "" "Page contains <i> or <b> tags" "<i>/<b> tags should be <em>/<strong> tags"
+    AddToArray "<i> or <b> tags" $item.title "" "Page contains <i> or <b> tags" "<i>/<b> tags should be <em>/<strong> tags"
   }
 }
 function AddToArray{

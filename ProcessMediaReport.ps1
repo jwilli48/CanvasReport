@@ -43,7 +43,7 @@ function Process-Links{
           Write-Host "Video not found"
           $video_length = "00:00:00"
         }
-        AddToArray "Youtube Link" $page.title $VideoID $video_Length $href "Yes"; break
+        AddToArray "Youtube Link" $item.title $VideoID $video_Length $href "Yes"; break
       }
       Default {}
     }
@@ -76,7 +76,7 @@ function Process-Iframes{
         Write-Host "Video not found"
         $video_length = "00:00:00"
       }
-      AddToArray "Youtube Video" $page.title $video_ID $video_Length $title "Yes"
+      AddToArray "Youtube Video" $item.title $video_ID $video_Length $title "Yes"
     }
     elseif($iframe.contains('brightcove')){
       $Video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].value}).split('=')[-1].split("&")[0]
@@ -84,10 +84,10 @@ function Process-Iframes{
       $transcript = Get-TranscriptAvailable $iframe
       if($transcript){$transcript = "Yes"}
       else{$transcript = "No"}
-      AddToArray "Brightcove Video" $page.title $video_ID $video_Length $title $transcript
+      AddToArray "Brightcove Video" $item.title $video_ID $video_Length $title $transcript
     }
     elseif($iframe.contains('H5P')){
-      AddToArray "H5P" $page.title "" "00:00:00" $title "N\A"
+      AddToArray "H5P" $item.title "" "00:00:00" $title "N\A"
     }
     elseif($iframe.contains('byu.mediasite')){
       $video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].Value}).split('/')[-1]
@@ -98,7 +98,7 @@ function Process-Iframes{
       $transcript = Get-TranscriptAvailable $iframe
       if($transcript){$transcript = "Yes"}
       else{$transcript = "No"}
-      AddToArray "BYU Mediasite Video" $page.title $video_ID $video_Length $title $transcript
+      AddToArray "BYU Mediasite Video" $item.title $video_ID $video_Length $title $transcript
     }
     elseif($iframe.contains('Panopto')){
       $video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].Value}).split('=').split('&')[1]
@@ -106,10 +106,10 @@ function Process-Iframes{
       $transcript = Get-TranscriptAvailable $iframe
       if($transcript){$transcript = "Yes"}
       else{$transcript = "No"}
-      AddToArray "Panopto Video" $page.title $video_ID $video_Length $title $transcript
+      AddToArray "Panopto Video" $item.title $video_ID $video_Length $title $transcript
     }
     else{
-      AddToArray "Iframe" $page.title "" "00:00:00" $title "N\A"
+      AddToArray "Iframe" $item.title "" "00:00:00" $title "N\A"
     }
   }
 }
@@ -134,7 +134,7 @@ function Process-BrightcoveVideoHTML{
     }
     if($transcript){$transcript = "Yes"}
     else{$transcript = "No"}
-    AddToArray "Brightcove Video" $page.title $id $video_Length $title $transcript
+    AddToArray "Brightcove Video" $item.title $id $video_Length $title $transcript
   }
 }
 
