@@ -23,7 +23,7 @@ function Start-Chrome{
   [OpenQA.Selenium.LogLevel]::Off
   if($Headless){
     [OpenQA.Selenium.Chrome.ChromeOptions]$chrome_options = New-Object OpenQA.Selenium.Chrome.ChromeOptions
-    $chrome_options.addArguments('headless','disable-gpu')
+    $chrome_options.addArguments('--headless','--disable-gpu', '--log-level=3', '--mute-audio')
     $Global:chrome = New-Object OpenQA.Selenium.Chrome.Chromedriver($chrome_options)
   }else{
     $Global:chrome = New-Object OpenQA.Selenium.Chrome.Chromedriver

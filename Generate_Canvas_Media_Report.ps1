@@ -23,8 +23,8 @@ $sw = [Diagnostics.Stopwatch]::new()
 $sw.start()
 
 Get-Modules
-Write-Host -ForegroundColor Magenta "Please don't click on the chrome browser (You can move it though)"
-Start-Chrome
+Write-Host -ForegroundColor Magenta "Starting chrome..."
+Start-Chrome -Headless
 $chrome.url = "https://signin.brightcove.com/login?redirect=https%3A%2F%2Fstudio.brightcove.com%2Fproducts%2Fvideocloud%2Fmedia"
 $chromeWait.until($conditions::ElementIsVisible($by::CssSelector("input[name*='email']"))).sendKeys($BrightcoveCredentials.UserName) | Out-Null
 $chromeWait.until($conditions::ElementIsVisible($by::CssSelector("input[id*='password']"))).sendKeys($BrightcoveCredentials.GetNetworkCredential().password) | Out-Null
