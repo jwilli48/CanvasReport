@@ -223,23 +223,24 @@ function Process-Tables{
           if($check[$i] -match "<h\d"){
             $issueList += "Heading tags should not be inside of tables"
           }
-          if($check[$i] -match "colspan="){
+
+          if($check[$i] -match "colspan"){
             if($check[$i-1] -match "<tr" -and $check[$i+1] -match "</tr"){
               $issueList += "Stretched cell(s) should possibly be a <caption> title for the table"
             }
           }
-          if($check[$i] -match "<th"){
+          elseif($check[$i] -match "<th[^e]"){
             $hasHeaders = $TRUE
             if($check[$i] -notmatch "scope"){
               $issueList += "Table headers should have either scope=`"row`" or scope=`"col`" for screenreaders"
             }
           }
-          if($check[$i] -match "<td"){
+          elseif($check[$i] -match "<td"){
             if($check[$i] -match "scope"){
               $issueList += "Non-header table cells should not have scope attributes"
             }
           }
-          if($check[$i] -match "<tr"){
+          elseif($check[$i] -match "<tr"){
             $rowNumber++
           }elseif($check[$i] -match "<th" -or $check[$i] -match "<td"){
             $columnNumber++
