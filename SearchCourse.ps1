@@ -39,7 +39,6 @@ Function Search-Course{
       }
       Process_Contents $page_body
       if($item.type -eq "Quiz"){
-        Write-Host "Checking quiz questions..." -ForegroundColor Green
         try{
           $quizQuestions = Get-CanvasQuizQuestion -CourseId $course_id -QuizId $item.content_id
           foreach($question in $quizQuestions){

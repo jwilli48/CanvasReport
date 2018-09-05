@@ -16,6 +16,7 @@ function Process_Contents{
   Process-Tables
   Process-Semantics
   Process-VideoTags
+  Process-BrightcoveVideoHTML
 
   $data = Transpose-Data Element, Location, VideoID, Text, Accessibility, IssueSeverity $elementList, $locationList, $videoIDList, $textList, $AccessibilityList, $issueSeverityList
   $Global:ExcelReport = $PSScriptRoot + "\Reports\A11yReport_" + $courseName + ".xlsx"
@@ -186,6 +187,31 @@ function Process-Iframes{
       }
     }
     $i++
+  }
+}
+
+function Process-BrightcoveVideoHTML{
+  $brightcove_list = $page_body | Select-String -pattern '<div id="[^\d]*(\d{13})"' -Allmatches | % {$_.Matches.Value}
+  $id_list = $brightcove_list | Select-String -pattern '\d{13}' -AllMatches | % {$_.matches.Value}
+  foreach($id in $id_list){
+    $transcriptCheck = $page_body.split("`n")
+    $i = 0
+    while($transcriptCheck[$i] -notmatch "$id"){$i++}
+    $transcript = $FALSE
+    for($j = $i; $j -lt ($i +5); $j++){
+      if($transcript[$j] -eq $NULL){
+        #End of file
+        break
+      }elseif($transcript[$j].contains("transcript")){
+        $transcript = $TRUE
+        break
+      }
+    }
+    if($transcript){$transcript = "Yes"}
+    else{
+      $transcript = "No"
+      AddToArray "Transcript" $item.title "$id" "No transcript found for BrightCove video with id:`n$id" "No transcript found"
+    }
   }
 }
 
