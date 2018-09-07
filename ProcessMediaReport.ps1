@@ -59,7 +59,7 @@ function Process-Iframes{
     $Global:videoNotFound = ""
     $title = ""
     if(-not $iframe.contains('title')){
-      $title = "No Title Found"
+      $title = "No Title Attribute Found"
     }else{
       $title = $iframe | Select-String -pattern 'title="(.*?)"' | % {$_.Matches.Groups[1].value}
       if($title -eq $NULL -or $title -eq ""){

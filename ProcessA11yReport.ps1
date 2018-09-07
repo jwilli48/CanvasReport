@@ -76,7 +76,7 @@ function Process-Links{
       $NULL{
         AddToArray "Link" $item.title "" "Invisble link with no text" "Adjust Link Text"; break
       }
-      "^[A-Za-z\.]+$" {
+      "^[A-Za-z\.]+$" {#This matches if the link text is a sigle word
         AddToArray "Link" $item.title "" $text "Adjust Link Text"; break
       }
       "Click" {
@@ -149,7 +149,7 @@ function Process-Iframes{
   foreach($iframe in $iframeList){
     $title = ""
     if(-not $iframe.contains('title')){
-      $Accessibility = "Needs a title"
+      $Accessibility = "Needs a title attribute"
 
       if($iframe.contains('youtube')){
         $Video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].value}).split('/')[4].split('?')[0]
