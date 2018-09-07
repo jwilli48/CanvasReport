@@ -31,7 +31,7 @@ function ConvertTo-A11yExcel{
     $cell[$rowNumber,3].Value = $data[$i].Location
     switch ($data[$i].Accessibility)
     {
-      "Needs a title"{
+      "Needs a title attribute"{
         AddToCell "Semantics" "Missing title/label" "$($data[$i].Element) needs a title attribute`nID: $($data[$i].VideoID)"
         Break
       }
