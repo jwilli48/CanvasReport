@@ -31,7 +31,7 @@ Function Search-Course{
         #if its not any of the above just skip it as it is not yet supported
         continue
       }
-      Write-Host $page.title -ForegroundColor Green
+      Write-Host $item.title -ForegroundColor Green
 
       if($page_body -eq '' -or $page_body -eq $NULL){
         #Page is empty
