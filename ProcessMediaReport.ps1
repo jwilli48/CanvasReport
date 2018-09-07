@@ -18,10 +18,10 @@ function Process_Contents{
   Process-VideoTags
 
   $data = Transpose-Data Element, Location, VideoID, VideoLength, Text, Transcript, MediaCount $elementList, $locationList, $videoIDList, $videoLengthList, $textList, $transcriptAvailability, $mediaCountList
-  $markRed = @((New-ConditionalText -Text "No Title" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'))
+  $markRed = @((New-ConditionalText -Text "Video not found" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'))
   $highlight = @((New-ConditionalText -Text "Duplicate Video" -BackgroundColor '#ffff8b' -ConditionalTextColor '#000000' ))
   if(-not ($data -eq $NULL)){
-    $data | Export-Excel $ExcelReport -ConditionalText $highlight -AutoFilter -AutoSize -Append
+    $data | Export-Excel $ExcelReport -ConditionalText $highlight, $markRed -AutoFilter -AutoSize -Append
   }
 }
 
@@ -29,6 +29,7 @@ function Process-Links{
   $link_list = $page_body | Select-String -pattern "<a.*?>.*?</a>" -AllMatches | % {$_.Matches.Value}
   $href_list = $link_list | Select-String -pattern 'href="(.*?)"' -AllMatches | % {$_.Matches.Groups[1].Value}
   foreach($href in $href_list){
+    $Global:videoNotFound = ""
     switch -regex ($href)
     {
       "youtu\.?be" {
@@ -41,10 +42,11 @@ function Process-Links{
         try{
           $video_Length = [timespan]::fromseconds((Get-GoogleVideoSeconds -VideoID $VideoID)).toString("hh\:mm\:ss")
         }catch{
-          Write-Host "Video not found"
+          Write-Host "Video not found" -ForegroundColor Magenta
           $video_length = "00:00:00"
+          $Global:videoNotFound = "`nVideo not found"
         }
-        AddToArray "Youtube Link" $item.title $VideoID $video_Length $href "Yes"; break
+        AddToArray "Youtube Link" $item.title $VideoID $video_Length "$href$videoNotFound" "Yes"; break
       }
       Default {}
     }
@@ -54,6 +56,7 @@ function Process-Links{
 function Process-Iframes{
   $iframeList = $page_body | Select-String -pattern "<iframe.*?>.*?</iframe>" -AllMatches | % {$_.Matches.Value}
   foreach($iframe in $iframeList){
+    $Global:videoNotFound = ""
     $title = ""
     if(-not $iframe.contains('title')){
       $title = "No Title Found"
@@ -74,10 +77,11 @@ function Process-Iframes{
       try{
         $video_Length = [timespan]::fromseconds((Get-GoogleVideoSeconds -VideoID $Video_ID)).toString("hh\:mm\:ss")
       }catch{
-        Write-Host "Video not found"
+        Write-Host "Video not found" -ForegroundColor Magenta
         $video_length = "00:00:00"
+        $Global:videoNotFound = "`nVideo not found"
       }
-      AddToArray "Youtube Video" $item.title $video_ID $video_Length $title "Yes"
+      AddToArray "Youtube Video" $item.title $video_ID $video_Length "$title$videoNotFound" "Yes"
     }
     elseif($iframe.contains('brightcove')){
       $Video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].value}).split('=')[-1].split("&")[0]
@@ -85,7 +89,7 @@ function Process-Iframes{
       $transcript = Get-TranscriptAvailable $iframe
       if($transcript){$transcript = "Yes"}
       else{$transcript = "No"}
-      AddToArray "Brightcove Video" $item.title $video_ID $video_Length $title $transcript
+      AddToArray "Brightcove Video" $item.title $video_ID $video_Length "$title$videoNotFound" $transcript
     }
     elseif($iframe.contains('H5P')){
       AddToArray "H5P" $item.title "" "00:00:00" $title "N\A"
@@ -99,7 +103,7 @@ function Process-Iframes{
       $transcript = Get-TranscriptAvailable $iframe
       if($transcript){$transcript = "Yes"}
       else{$transcript = "No"}
-      AddToArray "BYU Mediasite Video" $item.title $video_ID $video_Length $title $transcript
+      AddToArray "BYU Mediasite Video" $item.title $video_ID $video_Length "$title$videoNotFound" $transcript
     }
     elseif($iframe.contains('Panopto')){
       $video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].Value}).split('=').split('&')[1]
@@ -107,7 +111,7 @@ function Process-Iframes{
       $transcript = Get-TranscriptAvailable $iframe
       if($transcript){$transcript = "Yes"}
       else{$transcript = "No"}
-      AddToArray "Panopto Video" $item.title $video_ID $video_Length $title $transcript
+      AddToArray "Panopto Video" $item.title $video_ID $video_Length "$title$videoNotFound" $transcript
     }
     else{
       AddToArray "Iframe" $item.title "" "00:00:00" $title "N\A"

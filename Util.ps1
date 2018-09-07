@@ -25,8 +25,9 @@ function Get-BrightcoveVideoLength {
   try{
     $length = (Wait-UntilElementIsVisible -Selector div[class*='runtime'] -byCssSelector).text
   }catch{
-    Write-Host "Video not found"
+    Write-Host "Video not found" -ForegroundColor Magenta
     $length = "00:00"
+    $Global:videoNotFound = "`nVideo not found"
   }
   $length = "00:" + $length
   $length = [TimeSpan]$length
@@ -56,8 +57,9 @@ function Get-BYUMediaSiteVideoLength{
       $length = (Wait-UntilElementIsVisible -Selector span[class*="duration"] -byCssSelector).text
     }
   }catch{
-    Write-Host "Video not found"
+    Write-Host "Video not found" -ForegroundColor Magenta
     $length = "00:00"
+    $Global:videoNotFound = "`nVideo not found"
   }
   $length = "00:" + $length
   $length = [TimeSpan]$length
@@ -75,8 +77,9 @@ function Get-PanoptoVideoLength{
     (Wait-UntilElementIsVisible -Selector 'div[aria-label="Play"]' -byCssSelector).click()
     $length = (Wait-UntilElementIsVisible -Selector span[class*="duration"] -byCssSelector).text
   }catch{
-    Write-Host "Video not found"
+    Write-Host "Video not found" -ForegroundColor Magenta
     $length = "00:00"
+    $Global:videoNotFound = "`nVideo not found"
   }
   $length = "00:" + $length
   $length = [TimeSpan]$length
