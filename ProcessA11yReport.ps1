@@ -76,7 +76,7 @@ function Process-Links{
       $NULL{
         AddToArray "Link" $item.title "" "Invisble link with no text" "Adjust Link Text"; break
       }
-      "\bhere\b" {
+      "^[A-Za-z\.]+$" {
         AddToArray "Link" $item.title "" $text "Adjust Link Text"; break
       }
       "Click" {
