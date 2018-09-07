@@ -76,9 +76,9 @@ function Search-Directory{
       Write-Progress -Activity "Checking pages" -Status "Progress:" -PercentComplete ($i/$course_files.length * 100)
 
       $file_content = Get-Content -Encoding UTF8 -Path $file.PSpath -raw
-      $page = Transpose-Data body, title $file_content, $file.name
-      $page_body = $page.body
-      Write-Host $page.title -ForegroundColor Green
+      $item = Transpose-Data body, title $file_content, $file.name
+      $page_body = $item.body
+      Write-Host $item.title -ForegroundColor Green
 
       if($page_body -eq '' -or $page_body -eq $NULL){
         continue
