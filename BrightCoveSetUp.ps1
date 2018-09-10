@@ -23,9 +23,9 @@ function Set-BrightcoveCredentials{
     $Global:BrightcoveCredentials = New-Object System.Management.Automation.PSCredential -ArgumentList $username, $securePwd
     Write-Host "WARNING: If Brightcove fails to login you may have saved the wrong Username and Password, please go to $PSScriptRoot\Passwords and delete the text files there to reset them" -ForegroundColor Yellow
   }catch{
-    Write-Host "Your password and username file at $PSScriptRoot\Passwords is null, please delete them and run the program again" -ForegroundColor Red
+    Write-Host "Your password and username files at $PSScriptRoot\Passwords threw an error, they may be empty, please delete them and run the program again" -ForegroundColor Red
     while($true){
-      Read-Host "Please close the program"
+      Read-Host "Please close the program" -ForegroundColor Cyan
     }
   }
 }
