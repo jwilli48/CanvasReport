@@ -191,8 +191,8 @@ function AddToArray{
 
 function Get-GoogleAPI{
   if(-not (Test-Path "$PSScriptRoot\Passwords\MyGoogleApi.txt")){
-    Write-Host "Google API needed to get length of YouTube videos." -ForegroundColor Yellow
-    $api = Read-Host "Please enter it now (It will then be saved)"
+    Write-Host "Google API needed to get length of YouTube videos." -ForegroundColor Magenta
+    $api = Read-Host "Please enter it now (It will then be saved)" -ForegroundColor Magenta
     Set-Content $PSScriptRoot\Passwords\MyGoogleApi.txt $api
   }
   $Global:GoogleApi = Get-Content "$PSScriptRoot\Passwords\MyGoogleApi.txt"

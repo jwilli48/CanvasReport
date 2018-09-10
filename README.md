@@ -27,6 +27,9 @@ If you wish to be able to run the program without doing the above every time, th
 The report will be generated and saved to the Report folder within this directory. If you try to create a 2nd report for a course while there is a previous one still there it will just add to the bottom of the previous one instead of creating a new one.
 
 ## First time running
+***IMPORTANT:***
+You will need to unblock the .dll files contained in the net40 folder if you wish to run the Media Report generator. I believe this can also be done all at once if you unblock the .zip file before extracting it.
+
 The first time you run this it will ask you to input your Canvas API and the Canvas Default URL, as well as Brightcove credentials and a Google API
 1.You will need to generate your own API from your Account Settings in Canvas
 2.The default/base URL for BYU's canvas is https://byu.instructure.com
