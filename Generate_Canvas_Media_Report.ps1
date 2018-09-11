@@ -1,4 +1,11 @@
 Set-ExecutionPolicy Bypass -Scope Process
+if ($MyInvocation.MyCommand.CommandType -eq "ExternalScript"){
+  $ScriptPath = Split-Path -Parent -Path $MyInvocation.MyCommand.Definition
+}
+else{
+  $ScriptPath = Split-Path -Parent -Path ([Environment]::GetCommandLineArgs()[0])
+}
+Get-ChildItem -Recurse -Path "$ScriptPath" | Unblock-File
 
 Import-Module ./ProcessMediaReport.ps1 -Force
 Import-Module ./PowerShellSelenium.ps1 -Force
