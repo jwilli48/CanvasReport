@@ -3,8 +3,8 @@ This program is now able to run on a directory of HTML files and allows you to e
 
 ## DEPENDANCIES
 They will be automatically installed when first running the program.
-1. ImportExcel Module
-2. BurntToast Module
+1. ImportExcel Module (For creating and formatting the Excel document generated)
+2. BurntToast Module (For sending a desktop notification when the application finishes)
 
 ## How to Run
 Just run the .exe file for the report you want to generate. If it is the first time running it will ask you for certain credentials needed to fully run the program and then it will save them into the Passwords directory that will also be created on the first time being run. If you need to reset any of the data entered just delete the text fils or the whole Password directory to reset them.
@@ -28,7 +28,7 @@ The report will be generated and saved to the Report folder within this director
 
 ## First time running
 ***IMPORTANT:***
-You will need to unblock the .dll files contained in the net40 folder if you wish to run the Media Report generator. I believe this can also be done all at once if you unblock the .zip file before extracting it.
+You may need to unblock the .dll files contained in the net40 folder if you wish to run the Media Report generator. I believe this can also be done all at once if you unblock the .zip file before extracting it.
 
 The first time you run this it will ask you to input your Canvas API and the Canvas Default URL, as well as Brightcove credentials and a Google API
 1.You will need to generate your own API from your Account Settings in Canvas

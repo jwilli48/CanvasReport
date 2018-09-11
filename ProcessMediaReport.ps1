@@ -20,8 +20,9 @@ function Process_Contents{
   $data = Transpose-Data Element, Location, VideoID, VideoLength, Text, Transcript, MediaCount $elementList, $locationList, $videoIDList, $videoLengthList, $textList, $transcriptAvailability, $mediaCountList
   $markRed = @((New-ConditionalText -Text "Video not found" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'))
   $highlight = @((New-ConditionalText -Text "Duplicate Video" -BackgroundColor '#ffff8b' -ConditionalTextColor '#000000' ))
+  $markBlue = @((New-ConditionalText -Text "Inline Media:`nUnable to find title or video length for this type of video" -BackgroundColor Cyan -ConditionalTextColor '#000000'))
   if(-not ($data -eq $NULL)){
-    $data | Export-Excel $ExcelReport -ConditionalText $highlight, $markRed -AutoFilter -AutoSize -Append
+    $data | Export-Excel $ExcelReport -ConditionalText $highlight, $markRed, $markBlue -AutoFilter -AutoSize -Append
   }
 }
 
