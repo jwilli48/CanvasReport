@@ -21,7 +21,7 @@ function Process_Contents{
   $data = Transpose-Data Element, Location, VideoID, Text, Accessibility, IssueSeverity $elementList, $locationList, $videoIDList, $textList, $AccessibilityList, $issueSeverityList
   $Global:ExcelReport = $PSScriptRoot + "\Reports\A11yReport_" + $courseName + ".xlsx"
 
-  ###ConditionalText no longer used, changed to using a Template instead
+  ###ConditionalText no longer used, changed to using a Template instead###
   #$markRed  = @((New-ConditionalText -Text "Adjust Link Text" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Needs a title" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "No Alt Attribute" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Alt Text May Need Adjustment" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "JavaScript links are not accessible" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Check if header" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Broken Link" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'),(New-ConditionalText -Text "Empty link tag" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'),(New-ConditionalText -Text "No transcript found" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'),(New-ConditionalText -Text "Revise table" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'))
 
   #$hightlight = @((New-ConditionalText -Text "<i> tags should be <em> tags" -BackgroundColor '#ffff8b' -ConditionalTextColor '#000000' ),(New-ConditionalText -Text "<b> tags should be <strong> tags" -BackgroundColor '#ffff8b' -ConditionalTextColor '#000000' ))
@@ -112,30 +112,26 @@ function Process-Images{
       AddToArray "Image" $item.title "" $img $Accessibility
     }else{
       $alt = $img | Select-String -pattern 'alt="(.*?)"' -AllMatches | % {$_.Matches.Groups[1].Value}
+      $Accessibility = "Alt Text May Need Adjustment"
       switch -regex ($alt)
       {
         "banner"{
-          $Accessibility = "Alt Text May Need Adjustment"
           AddToArray "Image" $item.title "" "Alt text:`n$alt" $Accessibility
           Break
         }
         "Placeholder"{
-          $Accessibility = "Alt Text May Need Adjustment"
           AddToArray "Image" $item.title "" "Alt text:`n$alt" $Accessibility
           Break
         }
         "\.jpg"{
-          $Accessibility = "Alt Text May Need Adjustment"
           AddToArray "Image" $item.title "" "Alt text:`n$alt" $Accessibility
           Break
         }
         "\.png"{
-          $Accessibility = "Alt Text May Need Adjustment"
           AddToArray "Image" $item.title "" "Alt text:`n$alt" $Accessibility
           Break
         }
         "https"{
-          $Accessibility = "Alt Text May Need Adjustment"
           AddToArray "Image" $item.title "" "Alt text:`n$alt" $Accessibility
           Break
         }
@@ -323,7 +319,6 @@ function Process-VideoTags{
       else{
         AddToArray "Inline Media Video" $item.title $videoID "Inline Media Video`n" "No transcript found"
       }
-
     }
 }
 
