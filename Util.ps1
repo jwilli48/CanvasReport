@@ -25,9 +25,15 @@ function Get-BrightcoveVideoLength {
   try{
     $length = (Wait-UntilElementIsVisible -Selector div[class*='runtime'] -byCssSelector).text
   }catch{
-    Write-Host "Video not found" -ForegroundColor Magenta
-    $length = "00:00"
-    $Global:videoNotFound = "`nVideo not found"
+    try{
+    $chrome.url = "https:" + ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].value})
+    (Wait-UntilElementIsVisible -Selector button.vjs-big-play-button -byCssSelector).click()
+    $length = (Wait-UntilElementIsVisible -Selector div[class*="vjs-duration-display"] -byCssSelector).text.split("`n")[-1]
+    }catch{
+      Write-Host "Video not found" -ForegroundColor Magenta
+      $length = "00:00"
+      $Global:videoNotFound = "`nVideo not found"
+    }
   }
   $length = "00:" + $length
   $length = [TimeSpan]$length

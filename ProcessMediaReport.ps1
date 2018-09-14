@@ -29,6 +29,18 @@ function Process_Contents{
 function Process-Links{
   $link_list = $page_body | Select-String -pattern "<a.*?>.*?</a>" -AllMatches | % {$_.Matches.Value}
   $href_list = $link_list | Select-String -pattern 'href="(.*?)"' -AllMatches | % {$_.Matches.Groups[1].Value}
+  foreach($link in $link_list){
+    switch -regex ($link)
+    {
+        "class=.*?video_link"{
+          $transcript = Get-TranscriptAvailable $link
+          if($transcript){$transcript = "Yes"}
+          else{$transcript = "No"}
+          AddToArray "Canvas Video Link" $item.title "" "00:00:00" "Inline Media:`nUnable to find title or video length for this type of video" $transcript
+          break
+        }
+    }
+  }
   foreach($href in $href_list){
     $Global:videoNotFound = ""
     switch -regex ($href)

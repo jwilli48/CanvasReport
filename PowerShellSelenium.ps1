@@ -106,6 +106,29 @@ function Wait-UntilElementIsVisible{
     else{ Write-Host "Please choose the type of selector you are wanting to use." }
 }
 
+function Wait-UntilElementExists{
+    param(
+      [string]$selector,
+      [switch]$byTagName,
+      [switch]$byClassName,
+      [switch]$byID,
+      [switch]$byLinkText,
+      [switch]$byPartialLinkText,
+      [switch]$byCssSelector,
+      [switch]$byXPath,
+      [switch]$byName
+    )
+    if($byTagName){ $chromeWait.Until($conditions::ElementExists($by::TagName($selector))) }
+    elseif($byClassName){ $chromeWait.Until($conditions::ElementExists($by::ClassName($selector))) }
+    elseif($byID){ $chromeWait.Until($conditions::ElementExists($by::Id($selector))) }
+    elseif($byLinkText){ $chromeWait.Until($conditions::ElementExists($by::LinkText($selector))) }
+    elseif($byPartialLinkText){ $chromeWait.Until($conditions::ElementExists($by::PartialLinkText($selector))) }
+    elseif($byCssSelector){ $chromeWait.Until($conditions::ElementExists($by::CssSelector($selector))) }
+    elseif($byXPath){ $chromeWait.Until($conditions::ElementExists($by::XPath($selector))) }
+    elseif($byName){ $chromeWait.Until($conditions::ElementExists($by::Name($selector))) }
+    else{ Write-Host "Please choose the type of selector you are wanting to use." }
+}
+
 function Move-ChromeBack{
   $chrome.Navigate().Back()
 }
