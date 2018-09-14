@@ -46,9 +46,10 @@ function Process-Links{
     switch -regex ($href)
     {
       "youtu\.?be" {
-        if($href.contains('=')){
-          $href = $href.split("&")[0]
-          $VideoID = $href.split('=')[-1]
+        if($href.contains("t=")){
+          $href.split("?")[0].split("/")[-1]
+        }elseif($href.contains('=')){
+          $VideoID = ($href -split 'v=')[-1].split("&")[0]
         }else{
           $VideoID = $href.split('/')[-1]
         }
