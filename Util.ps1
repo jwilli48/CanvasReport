@@ -108,5 +108,4 @@ function Get-TranscriptAvailable{
   }else{
     return $false
   }
-
 }
