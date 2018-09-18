@@ -44,7 +44,7 @@ function Process-Links{
       AddToArray "Link" $item.title "" $link "Empty link tag"
     }
   }
-  
+
   $href_list = $link_list | Select-String -pattern 'href="(.*?)"' -AllMatches | % {$_.Matches.Groups[1].Value}
 
   <#Checks broken links, not needed since Canvas has it built in
@@ -200,10 +200,10 @@ function Process-BrightcoveVideoHTML{
     while($transcriptCheck[$i] -notmatch "$id"){$i++}
     $transcript = $FALSE
     for($j = $i; $j -lt ($i +10); $j++){
-      if($transcript[$j] -eq $NULL){
+      if($transcriptCheck[$j] -eq $NULL){
         #End of file
         break
-      }elseif($transcript[$j] -match "transcript")){
+      }elseif($transcriptCheck[$j] -match "transcript"){
         $transcript = $TRUE
         break
       }
