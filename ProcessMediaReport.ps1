@@ -155,10 +155,10 @@ function Process-BrightcoveVideoHTML{
     while($transcriptCheck[$i] -notmatch "$id"){$i++}
     $transcript = $FALSE
     for($j = $i; $j -lt ($i + 10); $j++){
-      if($transcript[$j] -eq $NULL){
+      if($transcriptCheck[$j] -eq $NULL){
         #End of file
         break
-      }elseif($transcript[$j].contains("transcript")){
+      }elseif($transcriptCheck[$j] -match "transcript"){
         $transcript = $TRUE
         break
       }
