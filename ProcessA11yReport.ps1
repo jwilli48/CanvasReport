@@ -40,8 +40,11 @@ function Process-Links{
       AddToArray "JavaScript Link" $item.title "" $link "JavaScript links are not accessible"
     }#>elseif(-not $link.contains('href')){
       AddToArray "Link" $item.title "" $link "Empty link tag"
+    }elseif($link -match 'href="\s*?"'){
+      AddToArray "Link" $item.title "" $link "Empty link tag"
     }
   }
+  
   $href_list = $link_list | Select-String -pattern 'href="(.*?)"' -AllMatches | % {$_.Matches.Groups[1].Value}
 
   <#Checks broken links, not needed since Canvas has it built in
