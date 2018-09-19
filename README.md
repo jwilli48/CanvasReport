@@ -26,7 +26,7 @@ If you wish to be able to run the program without doing the above every time, th
 ## Reports
 The report will be generated and saved to the Report folder within this directory. If you try to create a 2nd report for a course while there is a previous one still there it will just add to the bottom of the previous one instead of creating a new one.
 
-I added another .exe to check a directory of HTML files for any broken links or file paths. Similar to the others, just outputs to an excel sheet with the links or file paths that threw errors.
+I added another .exe to check a directory of HTML files for any broken links or file paths. Similar to the others, just outputs to an excel sheet with the links or file paths that threw errors. As Canvas has it's own built in link checker, I did not make it so the program will check anything other then HTML files.
 
 ## First time running
 ***IMPORTANT:***
