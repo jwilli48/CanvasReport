@@ -92,7 +92,8 @@ function AddToArray{
   $Global:status += $statusIn
 
 }
-
+#Maybe this will get rid of the SecureChannelFailure
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 Search-Directory $course_id
 
 $data = Transpose-Data Location, URL, Status $Global:location, $Global:href, $Global:status
