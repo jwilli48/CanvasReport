@@ -1,5 +1,6 @@
 Write-Host "Which canvas are you using:"
 $response = Read-Host "[1] Main, [2] Test, [3] MasterCourses"
+#If the CanvasApiCreds.json file exists this will find which domain it is for, copy it to the a different name and delete it. This is to ensure you don't accidently use the wrong ApiCreds with the wrong domain.
 if(Test-Path "$env:HOMEDRIVE$env:HOMEPATH\Documents\CanvasApiCreds.json"){
   $CanvasType =  (Get-Content "$env:HOMEDRIVE$env:HOMEPATH\Documents\CanvasApiCreds.json" | ConvertFrom-Json).BaseUri
   switch ($CanvasType)
@@ -15,6 +16,10 @@ if(Test-Path "$env:HOMEDRIVE$env:HOMEPATH\Documents\CanvasApiCreds.json"){
     "https://byuismastercourses.instructure.com"{
       Copy-Item -Path "$env:HOMEDRIVE$env:HOMEPATH\Documents\CanvasApiCreds.json" -Destination "$env:HOMEDRIVE$env:HOMEPATH\Documents\MASTER_CanvasApiCreds.json" -Force
       break
+    }
+    default{
+      Write-Host "CanvasApiCreds.json for unknown domain found, saving to `"$env:HOMEDRIVE$env:HOMEPATH\Documents\UNKNOWN_CanvasApiCreds.json`"" -ForegroundColor Red
+      Copy-Item -Path "$env:HOMEDRIVE$env:HOMEPATH\Documents\CanvasApiCreds.json" -Destination "$env:HOMEDRIVE$env:HOMEPATH\Documents\UNKNOWN_CanvasApiCreds.json" -Force
     }
   }
   Remove-Item -Path "$env:HOMEDRIVE$env:HOMEPATH\Documents\CanvasApiCreds.json"
