@@ -19,6 +19,7 @@ Import-Module ./SearchCourse.ps1 -Force
 Set-BrightcoveCredentials
 Get-GoogleApi
 
+./SetDomain.ps1
 $course_id = Read-Host "Enter Canvas Course ID or path to course HTML files"
 $directory = $FALSE
 
