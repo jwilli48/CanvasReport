@@ -51,7 +51,7 @@ Close-Chrome
 
 try{
 #Importing it checks if it is empty
-Import-Excel $ExcelReport
+Import-Excel $ExcelReport | Out-Null
 Write-Host 'Formatting Excel Document...' -ForegroundColor Green
 Format-MediaExcel1
 
