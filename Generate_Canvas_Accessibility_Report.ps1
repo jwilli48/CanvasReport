@@ -7,12 +7,14 @@ Import-Module ./FormatExcel.ps1 -Force
 Import-Module ./Notifications.ps1 -Force
 Import-Module ./SearchCourse.ps1 -Force
 
-./SetDomain.ps1
+
 $course_id = Read-Host "Enter Canvas Course ID or path to course HTML files"
 $directory = $FALSE
 
 if($course_id -match "[A-Z]:\\"){
   $directory = $true
+}else{
+  ./SetDomain.ps1
 }
 
 $sw = [Diagnostics.Stopwatch]::new()
