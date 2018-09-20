@@ -1,4 +1,4 @@
-Import-Module ./Util.ps1 -Force
+Import-Module "$home/Desktop/AccessibilityTools/CanvasReport-master/Util.ps1" -Force
 
 Function Search-Course{
   param(
