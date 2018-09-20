@@ -269,7 +269,7 @@ function Process-Tables{
           }
           elseif($check[$i] -match "<tr"){
             $rowNumber++
-          }elseif($check[$i] -match "<th" -or $check[$i] -match "<td"){
+          }elseif($check[$i] -match "<th[^e]" -or $check[$i] -match "<td"){
             $columnNumber++
           }elseif($check[$i] -match "</tr>"){
             if($check[$i+1] -notmatch "<tr"){}
@@ -325,6 +325,11 @@ function Process-VideoTags{
     }
 }
 
+function Process-Flash{
+  if($page_body -match "Content on this page requires a newer version of Adobe Flash Player"){
+    AddToArray "Flash Element" $item.title "" "There are $($page_body.split("`n") -match "Content on this page requires a newer version of Adobe Flash Player" | measure | Select -ExpandProperty Count) embeded flash elements on this page" "Flash is inaccessible"
+  }
+}
 function AddToArray{
   param(
     [string]$element,
