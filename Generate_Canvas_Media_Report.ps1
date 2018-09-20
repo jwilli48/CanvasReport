@@ -26,7 +26,7 @@ $directory = $FALSE
 if($course_id -match "[A-Z]:\\"){
   $directory = $true
 }else{
-  ./SetDomain.ps1
+  ."$home/Desktop/AccessibilityTools/CanvasReport-master/SetDomain.ps1"
 }
 
 $sw = [Diagnostics.Stopwatch]::new()
