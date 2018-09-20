@@ -12,7 +12,7 @@ function Set-BrightcoveCredentials{
   else{
     Write-Host "No Brightcove Credentials found, please enter them now." -ForegroundColor Yellow
 
-    . .\MakePassword.ps1
+    . "$home/Desktop/AccessibilityTools/CanvasReport-master/MakePassword.ps1"
 
     Write-Host "WARNING: If Brightcove fails to login this script will also continue to throw errors.`nYou may also need to go to the file $PsScriptRoot\Passwords.ps1 and change the username variable there" -ForegroundColor Yellow
   }
@@ -25,7 +25,7 @@ function Set-BrightcoveCredentials{
   }catch{
     Write-Host "Your password and username files at $PSScriptRoot\Passwords threw an error, they may be empty, please delete them and run the program again" -ForegroundColor Red
     while($true){
-      Read-Host "Please close the program" -ForegroundColor Cyan
+      Read-Host "Please close the program"
     }
   }
 }

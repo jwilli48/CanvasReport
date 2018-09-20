@@ -3,7 +3,7 @@ $response = Read-Host "[1] Main, [2] Test, [3] MasterCourses"
 #If the CanvasApiCreds.json file exists this will find which domain it is for, copy it to the a different name and delete it. This is to ensure you don't accidently use the wrong ApiCreds with the wrong domain.
 if(Test-Path "$HOME\Documents\CanvasApiCreds.json"){
   $CanvasType =  (Get-Content "$HOME\Documents\CanvasApiCreds.json" | ConvertFrom-Json).BaseUri
-  switch ($CanvasType)
+  switch -regex ($CanvasType)
   {
     "https://byu.instructure.com"{
       Copy-Item -Path "$HOME\Documents\CanvasApiCreds.json" -Destination "$HOME\Documents\BYU_CanvasApiCreds.json" -Force
