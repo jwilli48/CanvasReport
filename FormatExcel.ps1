@@ -83,6 +83,7 @@ function ConvertTo-A11yExcel{
   $template.Workbook.Worksheets[1].ConditionalFormatting[1].LowValue.Color = [System.Drawing.Color]::FromArgb(255,146,208,80)
   $template.Workbook.Worksheets[1].ConditionalFormatting[1].MiddleValue.Color = [System.Drawing.Color]::FromArgb(255,255,213,5)
   $template.Workbook.Worksheets[1].ConditionalFormatting[1].HighValue.Color = [System.Drawing.Color]::FromArgb(255,255,71,71)
+  Set-Format -WorkSheet $template.Workbook.Worksheets[1] -Range "E6:E6" -NumberFormat 'Short Date'
   Close-ExcelPackage $template -SaveAs "$ExcelReport"
 }
 
