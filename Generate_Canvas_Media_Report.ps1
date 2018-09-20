@@ -7,14 +7,14 @@ else{
 }
 Get-ChildItem -Recurse -Path "$ScriptPath" | Unblock-File
 
-Import-Module ./ProcessMediaReport.ps1 -Force
-Import-Module ./PowerShellSelenium.ps1 -Force
-Import-Module ./PoshCanvasNew.ps1 -Force
-Import-Module ./BrightCoveSetup.ps1 -Force
-Import-Module ./CheckModules.ps1 -Force
-Import-Module ./FormatExcel.ps1 -Force
-Import-Module ./Notifications.ps1 -Force
-Import-Module ./SearchCourse.ps1 -Force
+Import-Module "$home/Desktop/AccessibilityTools/CanvasReport-master/ProcessMediaReport.ps1" -Force
+Import-Module "$home/Desktop/AccessibilityTools/CanvasReport-master/PowerShellSelenium.ps1" -Force
+Import-Module "$home/Desktop/AccessibilityTools/CanvasReport-master/PoshCanvasNew.ps1" -Force
+Import-Module "$home/Desktop/AccessibilityTools/CanvasReport-master/BrightCoveSetup.ps1" -Force
+Import-Module "$home/Desktop/AccessibilityTools/CanvasReport-master/CheckModules.ps1" -Force
+Import-Module "$home/Desktop/AccessibilityTools/CanvasReport-master/FormatExcel.ps1" -Force
+Import-Module "$home/Desktop/AccessibilityTools/CanvasReport-master/Notifications.ps1" -Force
+Import-Module "$home/Desktop/AccessibilityTools/CanvasReport-master/SearchCourse.ps1" -Force
 
 Set-BrightcoveCredentials
 Get-GoogleApi
