@@ -330,6 +330,7 @@ function Process-Flash{
     AddToArray "Flash Element" $item.title "" "There are $($page_body.split("`n") -match "Content on this page requires a newer version of Adobe Flash Player" | measure | Select -ExpandProperty Count) embeded flash elements on this page" "Flash is inaccessible"
   }
 }
+
 function AddToArray{
   param(
     [string]$element,
