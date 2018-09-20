@@ -1,10 +1,10 @@
 Set-ExecutionPolicy Bypass -Scope Process
 
-Import-Module ./PoshCanvasNew.ps1 -Force
-Import-Module ./CheckModules.ps1 -Force
-Import-Module ./FormatExcel.ps1 -Force
-Import-Module ./Notifications.ps1 -Force
-Import-Module ./Util.ps1 -Force
+Import-Module "$home/Desktop/AccessibilityTools/CanvasReport-master/PoshCanvasNew.ps1" -Force
+Import-Module "$home/Desktop/AccessibilityTools/CanvasReport-master/CheckModules.ps1" -Force
+Import-Module "$home/Desktop/AccessibilityTools/CanvasReport-master/FormatExcel.ps1" -Force
+Import-Module "$home/Desktop/AccessibilityTools/CanvasReport-master/Notifications.ps1" -Force
+Import-Module "$home/Desktop/AccessibilityTools/CanvasReport-master/Util.ps1" -Force
 
 $course_id = Read-Host "Enter directory"
 
