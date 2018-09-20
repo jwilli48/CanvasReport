@@ -46,6 +46,10 @@ if($directory){
 
 Close-Chrome
 #Excel formatting
+
+try{
+#Importing it checks if it is empty
+Import-Excel $ExcelReport
 Write-Host 'Formatting Excel Document...' -ForegroundColor Green
 Format-MediaExcel1
 
@@ -55,5 +59,9 @@ Write-Host 'Finishing Excel formatting...' -ForegroundColor Green
 Format-MediaExcel2
 
 Write-Host "Report Generated" -ForegroundColor Green
+}catch{
+  Write-Host "ERROR: Excel Sheet may be empty" -ForegroundColor Red
+}
+
 $sw.stop()
 Send-Notification
