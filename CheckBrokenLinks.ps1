@@ -98,8 +98,10 @@ Search-Directory $course_id
 
 $data = Transpose-Data Location, URL, Status $Global:location, $Global:href, $Global:status
 $Global:ExcelReport = $PSScriptRoot + "\Reports\LinkCheck_" + $courseName + ".xlsx"
-if(-not ($data -eq $NULL)){
+if(-not ($NULL -eq $data)){
   $data | Export-Excel $ExcelReport -AutoFilter -AutoSize -Append
+}else{
+  Write-Host "Nothing found" -ForegroundColor Green
 }
 
 $sw.stop()
