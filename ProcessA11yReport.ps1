@@ -272,8 +272,7 @@ function Process-Tables{
           }elseif($check[$i] -match "<th[^e]" -or $check[$i] -match "<td"){
             $columnNumber++
           }elseif($check[$i] -match "</tr>"){
-            if($check[$i+1] -notmatch "<tr"){}
-            else{
+            if($check[$i+1] -match "<tr"){
               $columnNumber = 0
             }
           }
