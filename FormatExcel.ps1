@@ -77,6 +77,14 @@ function ConvertTo-A11yExcel{
     $rowNumber++
   }
 
+  $column = 3 #C
+  $row = 9 #start of data
+  while($NULL -ne $cells[$row,$column]){
+    $cells[$row,$column].Hyperlink = $cells[$row,$column].Value
+    $cells[$row,$column].Value = $cells[$row,$column].Value.Split("/").split("\")[-1]
+    $row++
+  }
+
   $template.Workbook.Worksheets[1].ConditionalFormatting[0].LowValue.Color = [System.Drawing.Color]::FromArgb(255,146,208,80)
   $template.Workbook.Worksheets[1].ConditionalFormatting[0].MiddleValue.Color = [System.Drawing.Color]::FromArgb(255,255,213,5)
   $template.Workbook.Worksheets[1].ConditionalFormatting[0].HighValue.Color = [System.Drawing.Color]::FromArgb(255,255,71,71)
@@ -85,6 +93,19 @@ function ConvertTo-A11yExcel{
   $template.Workbook.Worksheets[1].ConditionalFormatting[1].HighValue.Color = [System.Drawing.Color]::FromArgb(255,255,71,71)
   Set-Format -WorkSheet $template.Workbook.Worksheets[1] -Range "E6:E6" -NumberFormat 'Short Date'
   Close-ExcelPackage $template -SaveAs "$ExcelReport"
+}
+
+function Add-LocationLinks{
+    $excel = Open-ExcelPackage -path $ExcelReport
+    $cells = $excel.Workbook.Worksheets[1].Cells
+    $column = 3 #C
+    $row = 9 #start of data
+    while($NULL -ne $cells[$row,$column]){
+      $cells[$row,$column].Hyperlink = $cells[$row,$column].Value
+      $cells[$row,$column].Value = $cells[$row,$column].Value.Split("/").split("\")[-1]
+      $row++
+    }
+    Close-ExcelPackage $excel
 }
 
 function AddToCell{

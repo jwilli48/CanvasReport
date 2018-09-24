@@ -76,7 +76,7 @@ function Search-Directory{
       Write-Progress -Activity "Checking pages" -Status "Progress:" -PercentComplete ($i/$course_files.length * 100)
 
       $file_content = Get-Content -Encoding UTF8 -Path $file.PSpath -raw
-      $item = Transpose-Data body, title $file_content, $file.name
+      $item = Transpose-Data body, title, url $file_content, $file.name, "file:///$directory/$($file.name)"
       $page_body = $item.body
       Write-Host $item.title -ForegroundColor Green
 
