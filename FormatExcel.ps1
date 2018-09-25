@@ -79,7 +79,7 @@ function ConvertTo-A11yExcel{
 
   $column = 3 #C
   $row = 9 #start of data
-  while($NULL -ne $cell[$row,$column]){
+  while($NULL -ne $cell[$row,$column].Value){
     $cell[$row,$column].Hyperlink = $cell[$row,$column].Value
     $cell[$row,$column].Value = $cell[$row,$column].Value.Split("/").split("\")[-1]
     $row++
@@ -100,7 +100,7 @@ function Add-LocationLinks{
     $cells = $excel.Workbook.Worksheets[1].Cells
     $column = 3 #C
     $row = 9 #start of data
-    while($NULL -ne $cells[$row,$column]){
+    while($NULL -ne $cells[$row,$column].Value){
       $cells[$row,$column].Hyperlink = $cells[$row,$column].Value
       $cells[$row,$column].Value = $cells[$row,$column].Value.Split("/").split("\")[-1]
       $row++
