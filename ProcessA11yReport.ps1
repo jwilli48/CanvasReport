@@ -17,7 +17,8 @@ function Process_Contents{
   Process-Semantics
   Process-VideoTags
   Process-BrightcoveVideoHTML
-
+  Process-flash
+  
   $data = Transpose-Data Element, Location, VideoID, Text, Accessibility, IssueSeverity $elementList, $locationList, $videoIDList, $textList, $AccessibilityList, $issueSeverityList
   $Global:ExcelReport = $PSScriptRoot + "\Reports\A11yReport_" + $courseName + ".xlsx"
 
