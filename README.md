@@ -28,6 +28,13 @@ The report will be generated and saved to the Report folder within this director
 
 I added another .exe to check a directory of HTML files for any broken links or file paths. Similar to the others, just outputs to an excel sheet with the links or file paths that threw errors. As Canvas has it's own built in link checker, I did not make it so the program will check anything other then HTML files.
 
+### Accessibility Template
+The template used for the Accessibility Report is the CAR - Accessibility Review Template.xlsx
+
+There is the main Worksheet that contains all of the issues found, their rating as well as the Location column is also a link that will either go to that Canvas page or it will open up the HTML file (if you have access to it on your computer) in your default browser (although I have so far only tested it in Chrome and Firefox). There is an overview with notes at the right side of the table, it is the last item in side boxes.
+
+There is also a worksheet that links to a bunch of the WCAG guidelines for accessibility, as well as a table and chart of the issues in another worksheet.
+
 ## First time running
 ***IMPORTANT:***
 You may need to unblock the .dll files contained in the net40 folder if you wish to run the Media Report generator. I believe this can also be done all at once if you unblock the .zip file before extracting it.
