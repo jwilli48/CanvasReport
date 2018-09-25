@@ -184,7 +184,7 @@ function Process-Iframes{
   foreach($iframe in $iframeList){
     if($iframe.contains('brightcove') -or $iframe.contains('byu.mediasite') -or $iframe.contains('Panopto')){
       if(-not (Get-TranscriptAvailable $iframe)){
-        AddToArray "Transcript" "$("$($item.url -split `"api/v\d/`" -join `"`")")" "" "Video number $i on page" "No transcript found"
+        AddToArray "Transcript" "$($item.url -split `"api/v\d/`" -join `"`")" "" "Video number $i on page" "No transcript found"
       }
     }
     $i++
