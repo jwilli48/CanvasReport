@@ -49,6 +49,10 @@ function Process-Links{
   $link_list = $page_body | Select-String -pattern "<a.*?>.*?</a>" -AllMatches | % {$_.Matches.Value}
   $href_list = $link_list | Select-String -pattern 'href="(.*?)"' -AllMatches | % {$_.Matches.Groups[1].Value}
   foreach($href in $href_list){
+    if($href -match "^#" -or $href -match "^mailto:"){
+      #these can't be checked by the program
+      continue
+    }
     if($href -notmatch "http" -and $href -notmatch "^www\." -and $href -notmatch ".*?\.com$" -and $href -notmatch ".*?\.org$"){
         if($href -match "^\.\."){
           if(-not (Test-Path (("$($course_id.split(`"\`").replace(`"HTML`",`"`") -join `"\`")$($href.split(`"/`").replace(`"..`",$NULL) -join `"\`")") -replace "\\\\", "\"))){
