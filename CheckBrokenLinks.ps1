@@ -95,7 +95,7 @@ $data = Transpose-Data Location, URL, Status $Global:location, $Global:href, $Gl
 $Global:ExcelReport = $PSScriptRoot + "\Reports\LinkCheck_" + $courseName + ".xlsx"
 if(-not ($NULL -eq $data)){
   $data | Export-Excel $ExcelReport -AutoFilter -AutoSize -Append
-  Write-Host "Report saved to $ExcelReport"
+  Write-Host "Report saved to $PsScriptRoot$ExcelReport"
 }else{
   Write-Host "Nothing found" -ForegroundColor Green
 }
