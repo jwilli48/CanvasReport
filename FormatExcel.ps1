@@ -23,7 +23,14 @@ function ConvertTo-A11yExcel{
   Moves the default excel sheet made into the template excel sheet. Takes the each row of default excel sheet then adds it to the correct table with the correct values in the template then saves over the old one.
   #>
   $template = Open-ExcelPackage -Path "$PsScriptRoot\CAR - Accessibility Review Template.xlsx"
-  $data = Import-Excel -path $ExcelReport
+  try{
+    $data = Import-Excel -path $ExcelReport
+  }catch{
+    Write-Host "ERROR: Failed to import the excel document at $ExcelReport`nMost likely this file existed already in template form which can't be imported correctly. Please delete or rename the file and run this program again."
+    while(1){
+      Read-Host "Please exit now."
+    }
+  }
   $cell = $template.Workbook.Worksheets[1].Cells
   $rowNumber = 9
   for($i = 0; $i -lt $data.length; $i++){
