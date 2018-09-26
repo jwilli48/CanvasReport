@@ -2,12 +2,12 @@ function Process_Contents{
   param(
     [string]$page_body
   )
-  $Global:elementList = [System.Collections.ArrayList]
-  $Global:locationList = [System.Collections.ArrayList]
-  $Global:videoIDList = [System.Collections.ArrayList]
-  $Global:textList = [System.Collections.ArrayList]
-  $Global:AccessibilityList = [System.Collections.ArrayList]
-  $Global:issueSeverityList = [System.Collections.ArrayList]
+  $Global:elementList = [System.Collections.ArrayList]::new()
+  $Global:locationList = [System.Collections.ArrayList]::new()
+  $Global:videoIDList = [System.Collections.ArrayList]::new()
+  $Global:textList = [System.Collections.ArrayList]::new()
+  $Global:AccessibilityList = [System.Collections.ArrayList]::new()
+  $Global:issueSeverityList = [System.Collections.ArrayList]::new()
 
   Process-Links
   Process-Iframes
@@ -239,7 +239,7 @@ function Process-Tables{
     $tableNumber = 0
     $check = $page_body.split("`n")
     for($i = 0; $i -lt $check.length; $i++){
-      $issueList = [System.Collections.ArrayList]
+      $issueList = [System.Collections.ArrayList]::new()
       if($check[$i].contains("<table")){
         $rowNumber = 0
         $columnNumber = 0
