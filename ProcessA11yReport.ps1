@@ -246,7 +246,7 @@ function Process-Tables{
         $tableNumber++
         $hasHeaders = $FALSE
         #Starts going through the whole table line by line
-        try{
+        try{#Try will catch if the table is missing a </table> closing tag
           while(-not ($check[$i].contains("</table>"))){
             #If table contains an heading tags it is an accessibility issue
             if($check[$i] -match "<h\d"){

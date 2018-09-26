@@ -4,7 +4,7 @@ Function Search-Course{
   param(
     $course_id
   )
-  $Global:courseName = (Get-CanvasCoursesById -Id $course_id).name
+  $Global:courseName = (Get-CanvasCoursesById -Id $course_id).course_code
   $courseName = $courseName -replace [regex]::escape('+'), ' ' -replace ':',''
   $course_modules = Get-CanvasModule -CourseId $course_id
 
