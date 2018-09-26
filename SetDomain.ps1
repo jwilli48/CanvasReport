@@ -31,21 +31,21 @@ switch ($response)
     if(Test-Path "$HOME\Documents\BYU_CanvasApiCreds.json"){
       Copy-Item -Path "$HOME\Documents\BYU_CanvasApiCreds.json" -Destination "$HOME\Documents\CanvasApiCreds.json" -Force
     }else{
-      Write-Host "You will need to create an Canvas API for this domain."
+      Write-Host "You will need to create a Canvas API for this domain."
     }
     break
   }"2"{
     if(Test-Path "$HOME\Documents\TEST_CanvasApiCreds.json"){
       Copy-Item -Path "$HOME\Documents\TEST_CanvasApiCreds.json" -Destination "$HOME\Documents\CanvasApiCreds.json" -Force
     }else{
-      Write-Host "You will need to create an Canvas API for this domain."
+      Write-Host "You will need to create a Canvas API for this domain."
     }
     break
   }"3"{
     if(Test-Path "$HOME\Documents\MASTER_CanvasApiCreds.json"){
       Copy-Item -Path "$HOME\Documents\MASTER_CanvasApiCreds.json" -Destination "$HOME\Documents\CanvasApiCreds.json" -Force
     }else{
-      Write-Host "You will need to create an Canvas API for this domain."
+      Write-Host "You will need to create a Canvas API for this domain."
     }
     break
   }

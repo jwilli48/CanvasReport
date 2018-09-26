@@ -17,8 +17,8 @@ function Process_Contents{
   Process-Semantics
   Process-VideoTags
   Process-BrightcoveVideoHTML
-  Process-flash
-  
+  Process-Flash
+
   $data = Transpose-Data Element, Location, VideoID, Text, Accessibility, IssueSeverity $elementList, $locationList, $videoIDList, $textList, $AccessibilityList, $issueSeverityList
   $Global:ExcelReport = $PSScriptRoot + "\Reports\A11yReport_" + $courseName + ".xlsx"
 
@@ -187,8 +187,8 @@ function Process-Iframes{
       if(-not (Get-TranscriptAvailable $iframe)){
         AddToArray "Transcript" "$($item.url -split `"api/v\d/`" -join `"`")" "" "Video number $i on page" "No transcript found"
       }
+      $i++
     }
-    $i++
   }
 }
 
@@ -246,38 +246,42 @@ function Process-Tables{
         $tableNumber++
         $hasHeaders = $FALSE
         #Starts going through the whole table line by line
-        while(-not ($check[$i].contains("</table>"))){
-          #If table contains an heading tags it is an accessibility issue
-          if($check[$i] -match "<h\d"){
-            $issueList += "Heading tags should not be inside of tables"
-          }
+        try{
+          while(-not ($check[$i].contains("</table>"))){
+            #If table contains an heading tags it is an accessibility issue
+            if($check[$i] -match "<h\d"){
+              $issueList += "Heading tags should not be inside of tables"
+            }
 
-          if($check[$i] -match "colspan"){
-            if($check[$i-1] -match "<tr" -and $check[$i+1] -match "</tr"){
-              $issueList += "Stretched cell(s) should possibly be a <caption> title for the table"
+            if($check[$i] -match "colspan"){
+              if($check[$i-1] -match "<tr" -and $check[$i+1] -match "</tr"){
+                $issueList += "Stretched cell(s) should possibly be a <caption> title for the table"
+              }
             }
-          }
-          elseif($check[$i] -match "<th[^e]"){
-            $hasHeaders = $TRUE
-            if($check[$i] -notmatch "scope"){
-              $issueList += "Table headers should have either scope=`"row`" or scope=`"col`" for screenreaders"
+            elseif($check[$i] -match "<th[^e]"){
+              $hasHeaders = $TRUE
+              if($check[$i] -notmatch "scope"){
+                $issueList += "Table headers should have either scope=`"row`" or scope=`"col`" for screenreaders"
+              }
             }
-          }
-          elseif($check[$i] -match "<td"){
-            if($check[$i] -match "scope"){
-              $issueList += "Non-header table cells should not have scope attributes"
+            elseif($check[$i] -match "<td"){
+              if($check[$i] -match "scope"){
+                $issueList += "Non-header table cells should not have scope attributes"
+              }
             }
-          }
-          elseif($check[$i] -match "<tr"){
-            $rowNumber++
-          }elseif($check[$i] -match "<th[^e]" -or $check[$i] -match "<td"){
-            $columnNumber++
-          }elseif($check[$i] -match "</tr>"){
-            if($check[$i+1] -match "<tr"){
-              $columnNumber = 0
+            elseif($check[$i] -match "<tr"){
+              $rowNumber++
+            }elseif($check[$i] -match "<th[^e]" -or $check[$i] -match "<td"){
+              $columnNumber++
+            }elseif($check[$i] -match "</tr>"){
+              if($check[$i+1] -match "<tr"){
+                $columnNumber = 0
+              }
             }
+            $i++
           }
-          $i++
+        }catch{
+          $issueList += "Table does not have an ending </table> tag"
         }
         if(-not $hasHeaders){
           if(($rowNumber -le 3) -and ($columnNumber -lt 3)){
