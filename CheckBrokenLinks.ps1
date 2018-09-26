@@ -13,9 +13,9 @@ $sw.start()
 
 Get-Modules
 
-$Global:location = @()
-$Global:href = @()
-$Global:status = @()
+$Global:location = [System.Collections.ArrayList]
+$Global:href = [System.Collections.ArrayList]
+$Global:status = [System.Collections.ArrayList]
 
 function Search-Directory{
   param(

@@ -2,13 +2,13 @@ function Process_Contents{
   param(
     [string]$page_body
   )
-  $Global:elementList = @()
-  $Global:locationList = @()
-  $Global:videoIDList = @()
-  $Global:videoLengthList = @()
-  $Global:textList = @()
-  $Global:transcriptAvailability = @()
-  $Global:mediaCountList = @()
+  $Global:elementList = [System.Collections.ArrayList]
+  $Global:locationList = [System.Collections.ArrayList]
+  $Global:videoIDList = [System.Collections.ArrayList]
+  $Global:videoLengthList = [System.Collections.ArrayList]
+  $Global:textList = [System.Collections.ArrayList]
+  $Global:transcriptAvailability = [System.Collections.ArrayList]
+  $Global:mediaCountList = [System.Collections.ArrayList]
 
   $Global:ExcelReport = $PSScriptRoot + "\Reports\MediaReport_" + $courseName + ".xlsx"
 

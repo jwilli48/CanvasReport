@@ -66,6 +66,7 @@ function Search-Directory{
   )
 
   $Global:courseName = $Directory.split('\')[-2]
+  $Global:ReportType = "$($Directory[0])Drive"
   $course_files = Get-ChildItem "$directory\*.html" -Exclude '*old*','*ImageGallery*', '*CourseMedia*', '*GENERIC*'
   if($course_files -eq $NULL){
     Write-Host "ERROR: Directory input is empty"

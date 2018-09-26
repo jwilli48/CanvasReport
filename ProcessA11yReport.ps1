@@ -2,12 +2,12 @@ function Process_Contents{
   param(
     [string]$page_body
   )
-  $Global:elementList = @()
-  $Global:locationList = @()
-  $Global:videoIDList = @()
-  $Global:textList = @()
-  $Global:AccessibilityList = @()
-  $Global:issueSeverityList = @()
+  $Global:elementList = [System.Collections.ArrayList]
+  $Global:locationList = [System.Collections.ArrayList]
+  $Global:videoIDList = [System.Collections.ArrayList]
+  $Global:textList = [System.Collections.ArrayList]
+  $Global:AccessibilityList = [System.Collections.ArrayList]
+  $Global:issueSeverityList = [System.Collections.ArrayList]
 
   Process-Links
   Process-Iframes
@@ -20,7 +20,7 @@ function Process_Contents{
   Process-Flash
 
   $data = Transpose-Data Element, Location, VideoID, Text, Accessibility, IssueSeverity $elementList, $locationList, $videoIDList, $textList, $AccessibilityList, $issueSeverityList
-  $Global:ExcelReport = $PSScriptRoot + "\Reports\A11yReport_" + $courseName + ".xlsx"
+  $Global:ExcelReport = $PSScriptRoot + "\Reports\A11yReport_" + $courseName + "_$ReportType.xlsx"
 
   ###ConditionalText no longer used, changed to using a Template instead###
   #$markRed  = @((New-ConditionalText -Text "Adjust Link Text" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Needs a title" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "No Alt Attribute" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Alt Text May Need Adjustment" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "JavaScript links are not accessible" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Check if header" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'), (New-ConditionalText -Text "Broken Link" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'),(New-ConditionalText -Text "Empty link tag" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'),(New-ConditionalText -Text "No transcript found" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'),(New-ConditionalText -Text "Revise table" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'))
@@ -239,7 +239,7 @@ function Process-Tables{
     $tableNumber = 0
     $check = $page_body.split("`n")
     for($i = 0; $i -lt $check.length; $i++){
-      $issueList = @()
+      $issueList = [System.Collections.ArrayList]
       if($check[$i].contains("<table")){
         $rowNumber = 0
         $columnNumber = 0
