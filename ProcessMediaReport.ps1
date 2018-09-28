@@ -146,7 +146,7 @@ function Process-VideoTags{
 }
 
 function Process-BrightcoveVideoHTML{
-  $brightcove_list = $page_body | Select-String -pattern '<div id="[^\d]*(\d{13}).*?"' -Allmatches | % {$_.Matches.Value}
+  $brightcove_list = $page_body | Select-String -pattern 'id="[^\d]*(\d{13}).*?"' -Allmatches | % {$_.Matches.Value}
   $id_list = $brightcove_list | Select-String -pattern '\d{13}' -AllMatches | % {$_.matches.Value}
   foreach($id in $id_list){
     $video_Length = (Get-BrightcoveVideoLength $id).toString('hh\:mm\:ss')
