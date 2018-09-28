@@ -105,7 +105,10 @@ function Get-TranscriptAvailable{
     }
   }elseif($check[$i-1].contains('Transcript')){
     return $true
-  }else{
+  }elseif($NULL -ne $check[$i+2] -and $check[$i+2].contains('Transcript')){
+    return $true
+  }
+  else{
     return $false
   }
 }
