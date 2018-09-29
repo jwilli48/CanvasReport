@@ -6,7 +6,7 @@ function Format-A11yExcel{
   Formats the excel sheet, which is actually not needed anymore as we now use a template
   #>
   $excel = Export-Excel $ExcelReport -PassThru
-  if(-not ($excel -eq $NULL)){
+  if(-not ($NULL -eq $excel)){
     $excel.Workbook.Worksheets["Sheet1"].Column(1).Width = 25
     $excel.Workbook.Worksheets["Sheet1"].Column(4).Width = 75
     $excel.Workbook.Worksheets["Sheet1"].Column(4).Style.wraptext = $true
@@ -155,7 +155,7 @@ function Format-MediaExcel1{
   Formats the media excel sheet which we do not have a template for. Makes sure that some of the rows do not become to long, gives it a max width and makes it so the column has text wrap. Also makes sure the number format is correct for both the video ID numbers in column C, and for the video lengths in column D
   #>
   $excel = Export-Excel $ExcelReport -PassThru
-  if(-not ($excel -eq $NULL)){
+  if(-not ($NULL -eq $excel)){
     $excel.Workbook.Worksheets["Sheet1"].Column(4).Width = 25
     $excel.Workbook.Worksheets["Sheet1"].Column(5).Width = 75
     $excel.Workbook.Worksheets["Sheet1"].Column(5).Style.wraptext = $true

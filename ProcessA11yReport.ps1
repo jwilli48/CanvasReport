@@ -9,17 +9,17 @@ function Process_Contents{
   $Global:AccessibilityList = [System.Collections.ArrayList]::new()
   $Global:issueSeverityList = [System.Collections.ArrayList]::new()
 
-  Process-Links
-  Process-Iframes
-  Process-Images
-  Process-Headers
-  Process-Tables
-  Process-Semantics
-  Process-VideoTags
-  Process-BrightcoveVideoHTML
-  Process-Flash
+  Start-ProcessLinks
+  Start-ProcessIframes
+  Start-ProcessImages
+  Start-ProcessHeaders
+  Start-ProcessTables
+  Start-ProcessSemantics
+  Start-ProcessVideoTags
+  Start-ProcessBrightcoveVideoHTML
+  Start-ProcessFlash
 
-  $data = Transpose-Data Element, Location, VideoID, Text, Accessibility, IssueSeverity $elementList, $locationList, $videoIDList, $textList, $AccessibilityList, $issueSeverityList
+  $data = Format-TransposeData Element, Location, VideoID, Text, Accessibility, IssueSeverity $elementList, $locationList, $videoIDList, $textList, $AccessibilityList, $issueSeverityList
   $Global:ExcelReport = $PSScriptRoot + "\Reports\A11yReport_" + $courseName + "_$ReportType.xlsx"
 
   ###ConditionalText no longer used, changed to using a Template instead###
@@ -27,13 +27,13 @@ function Process_Contents{
 
   #$hightlight = @((New-ConditionalText -Text "<i> tags should be <em> tags" -BackgroundColor '#ffff8b' -ConditionalTextColor '#000000' ),(New-ConditionalText -Text "<b> tags should be <strong> tags" -BackgroundColor '#ffff8b' -ConditionalTextColor '#000000' ))
 
-  if(-not ($data -eq $NULL)){
+  if(-not ($NULL -eq $data)){
     $data | Export-Excel $ExcelReport <#-ConditionalText $markRed, $highlight#> -AutoFilter -AutoSize -Append
   }
 }
 
-function Process-Links{
-  $link_list = $page_body | Select-String -pattern "<a.*?>.*?</a>" -AllMatches | % {$_.Matches.Value}
+function Start-ProcessLinks{
+  $link_list = $page_body | Select-String -pattern "<a.*?>.*?</a>" -AllMatches | ForEach-Object {$_.Matches.Value}
   foreach($link in $link_list){
     if($link.contains('onlick')){
       AddToArray "JavaScript Link" "$($item.url -split `"api/v\d/`" -join `"`")" "" $link "JavaScript links are not accessible"
@@ -46,7 +46,7 @@ function Process-Links{
     }
   }
 
-  $href_list = $link_list | Select-String -pattern 'href="(.*?)"' -AllMatches | % {$_.Matches.Groups[1].Value}
+  $href_list = $link_list | Select-String -pattern 'href="(.*?)"' -AllMatches | ForEach-Object {$_.Matches.Groups[1].Value}
 
   <#Checks broken links, not needed since Canvas has it built in
   if($Global:CheckLinks -eq $NULL){
@@ -71,7 +71,7 @@ function Process-Links{
       }
     }
   }#>
-  $link_text = $link_list | Select-String -pattern '<a.*?>(.*?)</a>' -AllMatches | % {$_.Matches.Groups[1].Value}
+  $link_text = $link_list | Select-String -pattern '<a.*?>(.*?)</a>' -AllMatches | ForEach-Object {$_.Matches.Groups[1].Value}
   foreach($text in $link_text){
     switch -regex ($text)
     {
@@ -107,15 +107,15 @@ function Process-Links{
   }
 }
 
-function Process-Images{
-  $image_list = $page_body | Select-String -pattern '<img.*?>' -AllMatches | % {$_.Matches.Value}
+function Start-ProcessImages{
+  $image_list = $page_body | Select-String -pattern '<img.*?>' -AllMatches | ForEach-Object {$_.Matches.Value}
   foreach($img in $image_list){
     $alt = ""
     if(-not $img.contains('alt')){
       $Accessibility = "No Alt Attribute"
       AddToArray "Image" "$($item.url -split `"api/v\d/`" -join `"`")" "" $img $Accessibility
     }else{
-      $alt = $img | Select-String -pattern 'alt="(.*?)"' -AllMatches | % {$_.Matches.Groups[1].Value}
+      $alt = $img | Select-String -pattern 'alt="(.*?)"' -AllMatches | ForEach-Object {$_.Matches.Groups[1].Value}
       $Accessibility = "Alt Text May Need Adjustment"
       switch -regex ($alt)
       {
@@ -146,33 +146,33 @@ function Process-Images{
 
 }
 
-function Process-Iframes{
-  $iframeList = $page_body | Select-String -pattern "<iframe.*?>.*?</iframe>" -AllMatches | % {$_.Matches.Value}
+function Start-ProcessIframes{
+  $iframeList = $page_body | Select-String -pattern "<iframe.*?>.*?</iframe>" -AllMatches | ForEach-Object {$_.Matches.Value}
   foreach($iframe in $iframeList){
     $title = ""
     if(-not $iframe.contains('title')){
       $Accessibility = "Needs a title attribute"
 
       if($iframe.contains('youtube')){
-        $Video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].value}).split('/')[4].split('?')[0]
+        $Video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | ForEach-Object {$_.Matches.Groups[1].value}).split('/')[4].split('?')[0]
         AddToArray "Youtube Video" "$($item.url -split `"api/v\d/`" -join `"`")" $video_ID $title $Accessibility
       }
       elseif($iframe.contains('brightcove')){
-        $Video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].value}).split('=')[-1].split("&")[0]
+        $Video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | ForEach-Object {$_.Matches.Groups[1].value}).split('=')[-1].split("&")[0]
         AddToArray "Brightcove Video" "$($item.url -split `"api/v\d/`" -join `"`")" $video_ID $title $Accessibility
       }
       elseif($iframe.contains('H5P')){
         AddToArray "H5P" "$($item.url -split `"api/v\d/`" -join `"`")" "" $title $Accessibility
       }
       elseif($iframe.contains('byu.mediasite')){
-        $video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].Value}).split('/')[-1]
+        $video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | ForEach-Object {$_.Matches.Groups[1].Value}).split('/')[-1]
         if($video_ID -eq ""){
-          $video_id = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].Value}).split('/')[-2]
+          $video_id = ($iframe | Select-String -pattern 'src="(.*?)"' | ForEach-Object {$_.Matches.Groups[1].Value}).split('/')[-2]
         }
         AddToArray "BYU Mediasite Video" "$($item.url -split `"api/v\d/`" -join `"`")" $video_ID $title $Accessibility
       }
       elseif($iframe.contains('Panopto')){
-        $video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].Value}).split('=').split('&')[1]
+        $video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | ForEach-Object {$_.Matches.Groups[1].Value}).split('=').split('&')[1]
         AddToArray "Panopto Video" "$($item.url -split `"api/v\d/`" -join `"`")" $video_ID $title $Accessibility
       }
       else{
@@ -192,16 +192,16 @@ function Process-Iframes{
   }
 }
 
-function Process-BrightcoveVideoHTML{
-  $brightcove_list = $page_body | Select-String -pattern '<div id="[^\d]*(\d{13})"' -Allmatches | % {$_.Matches.Value}
-  $id_list = $brightcove_list | Select-String -pattern '\d{13}' -AllMatches | % {$_.matches.Value}
+function Start-ProcessBrightcoveVideoHTML{
+  $brightcove_list = $page_body | Select-String -pattern '<div id="[^\d]*(\d{13})"' -Allmatches | ForEach-Object {$_.Matches.Value}
+  $id_list = $brightcove_list | Select-String -pattern '\d{13}' -AllMatches | ForEach-Object {$_.matches.Value}
   foreach($id in $id_list){
     $transcriptCheck = $page_body.split("`n")
     $i = 0
     while($transcriptCheck[$i] -notmatch "$id"){$i++}
     $transcript = $FALSE
     for($j = $i; $j -lt ($i +10); $j++){
-      if($transcriptCheck[$j] -eq $NULL){
+      if($NULL -eq $transcriptCheck[$j]){
         #End of file
         break
       }elseif($transcriptCheck[$j] -match "transcript"){
@@ -217,12 +217,12 @@ function Process-BrightcoveVideoHTML{
   }
 }
 
-function Process-Headers{
-  $headerList = $page_body | Select-String -pattern '<h\d.*?>.*?</h\d>' -Allmatches | % {$_.Matches.Value}
+function Start-ProcessHeaders{
+  $headerList = $page_body | Select-String -pattern '<h\d.*?>.*?</h\d>' -Allmatches | ForEach-Object {$_.Matches.Value}
   $accessibility = ""
   foreach($header in $headerList){
-    $headerLevel = $header | Select-String -Pattern "<h(\d)" -Allmatches | % {$_.matches.Groups[1].Value}
-    $headerText = $header | Select-String -pattern '<h\d.*?>(.*?)</h\d>' -AllMatches | % {$_.Matches.Groups[1].Value}
+    $headerLevel = $header | Select-String -Pattern "<h(\d)" -Allmatches | ForEach-Object {$_.matches.Groups[1].Value}
+    $headerText = $header | Select-String -pattern '<h\d.*?>(.*?)</h\d>' -AllMatches | ForEach-Object {$_.Matches.Groups[1].Value}
     switch -regex ($header)
     {
       'class=".*?screenreader-only.*?"'{
@@ -234,7 +234,7 @@ function Process-Headers{
   }
 }
 
-function Process-Tables{
+function Start-ProcessTables{
   if($page_body.contains("<table")){
     $tableNumber = 0
     $check = $page_body.split("`n")
@@ -291,7 +291,7 @@ function Process-Tables{
           }
         }
         $issueString = ""
-        $issueList | Select-Object -Unique | % {$issueString += "$_`n"}
+        $issueList | Select-Object -Unique | ForEach-Object {$issueString += "$_`n"}
         if($issueList.count -eq 0){}
         else{
           AddToArray "Table" "$($item.url -split `"api/v\d/`" -join `"`")"  "" "Table number $($tableNumber):`n$issueString" "Revise table"
@@ -301,9 +301,9 @@ function Process-Tables{
   }
 }
 
-function Process-Semantics{
-  $i_tag_list = $page_body | Select-String -pattern "<i.*?>(.*?)</i>" -AllMatches | % {$_.Matches.Groups[1].Value}
-  $b_tag_list = $page_body | Select-String -pattern "<b.*?>(.*?)</b>" -AllMatches | % {$_.Matches.Groups[1].Value}
+function Start-ProcessSemantics{
+  $i_tag_list = $page_body | Select-String -pattern "<i.*?>(.*?)</i>" -AllMatches | ForEach-Object {$_.Matches.Groups[1].Value}
+  $b_tag_list = $page_body | Select-String -pattern "<b.*?>(.*?)</b>" -AllMatches | ForEach-Object {$_.Matches.Groups[1].Value}
   $i = 0
   foreach($i_tag in $i_tag_list){
     $i++
@@ -316,10 +316,10 @@ function Process-Semantics{
   }
 }
 
-function Process-VideoTags{
-    $videotag_list = $page_body | Select-String -pattern '<video.*?>.*?</video>' -AllMatches | %{$_.Matches.Value}
+function Start-ProcessVideoTags{
+    $videotag_list = $page_body | Select-String -pattern '<video.*?>.*?</video>' -AllMatches | ForEach-Object {$_.Matches.Value}
     foreach($video in $videotag_list){
-      $src = $video | Select-String -pattern 'src="(.*?)"' -AllMatches | % {$_.Matches.Groups[1].Value}
+      $src = $video | Select-String -pattern 'src="(.*?)"' -AllMatches | ForEach-Object {$_.Matches.Groups[1].Value}
       $videoID = $src.split('=')[1].split("&")[0]
       $transcript = Get-TranscriptAvailable $video
       if($transcript){}
@@ -329,9 +329,9 @@ function Process-VideoTags{
     }
 }
 
-function Process-Flash{
+function Start-ProcessFlash{
   if($page_body -match "Content on this page requires a newer version of Adobe Flash Player"){
-    AddToArray "Flash Element" "$($item.url -split `"api/v\d/`" -join `"`")" "" "There are $($page_body.split("`n") -match "Content on this page requires a newer version of Adobe Flash Player" | measure | Select -ExpandProperty Count) embeded flash elements on this page" "Flash is inaccessible"
+    AddToArray "Flash Element" "$($item.url -split `"api/v\d/`" -join `"`")" "" "There are $($page_body.split("`n") -match "Content on this page requires a newer version of Adobe Flash Player" | Measure-Object | Select-Object -ExpandProperty Count) embeded flash elements on this page" "Flash is inaccessible"
   }
 }
 

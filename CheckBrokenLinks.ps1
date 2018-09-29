@@ -24,7 +24,7 @@ function Search-Directory{
 
   $Global:courseName = $Directory.split('\')[-2]
   $course_files = Get-ChildItem "$directory\*.html" -Exclude '*old*','*ImageGallery*', '*CourseMedia*', '*GENERIC*'
-  if($course_files -eq $NULL){
+  if($NULL -eq $course_files){
     Write-Host "ERROR: Directory input is empty"
   }else{
     $i = 0
@@ -33,21 +33,21 @@ function Search-Directory{
       Write-Progress -Activity "Checking pages" -Status "Progress:" -PercentComplete ($i/$course_files.length * 100)
 
       $file_content = Get-Content -Encoding UTF8 -Path $file.PSpath -raw
-      $item = Transpose-Data body, title $file_content, $file.name
+      $item = Format-TransposeData body, title $file_content, $file.name
       $page_body = $item.body
       Write-Host $item.title -ForegroundColor Green
 
       if($page_body -eq '' -or $page_body -eq $NULL){
         continue
       }
-      Process-Links $page_body
+      Start-ProcessLinks $page_body
     }
   }
 }
 
-function Process-Links{
-  $link_list = $page_body | Select-String -pattern "<a.*?>.*?</a>" -AllMatches | % {$_.Matches.Value}
-  $href_list = $link_list | Select-String -pattern 'href="(.*?)"' -AllMatches | % {$_.Matches.Groups[1].Value}
+function Start-ProcessLinks{
+  $link_list = $page_body | Select-String -pattern "<a.*?>.*?</a>" -AllMatches | ForEach-Object {$_.Matches.Value}
+  $href_list = $link_list | Select-String -pattern 'href="(.*?)"' -AllMatches | ForEach-Object {$_.Matches.Groups[1].Value}
   foreach($href in $href_list){
     if($href -match "^#" -or $href -match "^mailto:"){
       #these can't be checked by the program
@@ -95,7 +95,7 @@ function AddToArray{
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 Search-Directory $course_id
 
-$data = Transpose-Data Location, URL, Status $Global:location, $Global:href, $Global:status
+$data = Format-TransposeData Location, URL, Status $Global:location, $Global:href, $Global:status
 $Global:ExcelReport = $PSScriptRoot + "\Reports\LinkCheck_" + $courseName + ".xlsx"
 if(-not ($NULL -eq $data)){
   $data | Export-Excel $ExcelReport -AutoFilter -AutoSize -Append

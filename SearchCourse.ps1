@@ -33,7 +33,7 @@ Function Search-Course{
       }
       Write-Host $item.title -ForegroundColor Green
 
-      if($page_body -eq '' -or $page_body -eq $NULL){
+      if('' -eq $page_body -or $NULL -eq $page_body){
         #Page is empty
         continue
       }
@@ -68,7 +68,7 @@ function Search-Directory{
   $Global:courseName = $Directory.split('\')[-2]
   $Global:ReportType = "$($Directory[0])Drive"
   $course_files = Get-ChildItem "$directory\*.html" -Exclude '*old*','*ImageGallery*', '*CourseMedia*', '*GENERIC*'
-  if($course_files -eq $NULL){
+  if($NULL -eq $course_files){
     Write-Host "ERROR: Directory input is empty"
   }else{
     $i = 0
@@ -77,11 +77,11 @@ function Search-Directory{
       Write-Progress -Activity "Checking pages" -Status "Progress:" -PercentComplete ($i/$course_files.length * 100)
 
       $file_content = Get-Content -Encoding UTF8 -Path $file.PSpath -raw
-      $item = Transpose-Data body, title, url $file_content, $file.name, "file:///$directory/$($file.name)"
+      $item = Format-TransposeData body, title, url $file_content, $file.name, "file:///$directory/$($file.name)"
       $page_body = $item.body
       Write-Host $item.title -ForegroundColor Green
 
-      if($page_body -eq '' -or $page_body -eq $NULL){
+      if('' -eq $page_body -or $NULL -eq $page_body){
         continue
       }
       Process_Contents $page_body

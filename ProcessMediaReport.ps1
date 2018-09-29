@@ -12,12 +12,12 @@ function Process_Contents{
 
   $Global:ExcelReport = $PSScriptRoot + "\Reports\MediaReport_" + $courseName + ".xlsx"
 
-  Process-Links
-  Process-Iframes
-  Process-BrightcoveVideoHTML
-  Process-VideoTags
+  Start-ProcessLinks
+  Start-ProcessIframes
+  Start-ProcessBrightcoveVideoHTML
+  Start-ProcessVideoTags
 
-  $data = Transpose-Data Element, Location, VideoID, VideoLength, Text, Transcript, MediaCount $elementList, $locationList, $videoIDList, $videoLengthList, $textList, $transcriptAvailability, $mediaCountList
+  $data = Format-TransposeData Element, Location, VideoID, VideoLength, Text, Transcript, MediaCount $elementList, $locationList, $videoIDList, $videoLengthList, $textList, $transcriptAvailability, $mediaCountList
   $markRed = @((New-ConditionalText -Text "Video not found" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'))
   $highlight = @((New-ConditionalText -Text "Duplicate Video" -BackgroundColor '#ffff8b' -ConditionalTextColor '#000000' ))
   $markBlue = @((New-ConditionalText -Text "Inline Media:`nUnable to find title or video length for this type of video" -BackgroundColor Cyan -ConditionalTextColor '#000000'))
@@ -26,9 +26,9 @@ function Process_Contents{
   }
 }
 
-function Process-Links{
-  $link_list = $page_body | Select-String -pattern "<a.*?>.*?</a>" -AllMatches | % {$_.Matches.Value}
-  $href_list = $link_list | Select-String -pattern 'href="(.*?)"' -AllMatches | % {$_.Matches.Groups[1].Value}
+function Start-ProcessLinks{
+  $link_list = $page_body | Select-String -pattern "<a.*?>.*?</a>" -AllMatches | ForEach-Object {$_.Matches.Value}
+  $href_list = $link_list | Select-String -pattern 'href="(.*?)"' -AllMatches | ForEach-Object {$_.Matches.Groups[1].Value}
   foreach($link in $link_list){
     switch -regex ($link)
     {
@@ -67,22 +67,22 @@ function Process-Links{
   }
 }
 
-function Process-Iframes{
-  $iframeList = $page_body | Select-String -pattern "<iframe.*?>.*?</iframe>" -AllMatches | % {$_.Matches.Value}
+function Start-ProcessIframes{
+  $iframeList = $page_body | Select-String -pattern "<iframe.*?>.*?</iframe>" -AllMatches | ForEach-Object {$_.Matches.Value}
   foreach($iframe in $iframeList){
     $Global:videoNotFound = ""
     $title = ""
     if(-not $iframe.contains('title')){
       $title = "No Title Attribute Found"
     }else{
-      $title = $iframe | Select-String -pattern 'title="(.*?)"' | % {$_.Matches.Groups[1].value}
+      $title = $iframe | Select-String -pattern 'title="(.*?)"' | ForEach-Object {$_.Matches.Groups[1].value}
       if($title -eq $NULL -or $title -eq ""){
         $title = "Title found but was empty or could not be saved."
       }
     }
 
     if($iframe.contains('youtube')){
-      $VideoLink = $iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].value}
+      $VideoLink = $iframe | Select-String -pattern 'src="(.*?)"' | ForEach-Object {$_.Matches.Groups[1].value}
       if($VideoLink.contains('?')){
         $Video_ID = $VideoLink.split('/')[4].split('?')[0]
       }else{
@@ -98,7 +98,7 @@ function Process-Iframes{
       AddToArray "Youtube Video" $item.title $video_ID $video_Length "$title$videoNotFound" "Yes"
     }
     elseif($iframe.contains('brightcove')){
-      $Video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].value}).split('=')[-1].split("&")[0]
+      $Video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | ForEach-Object {$_.Matches.Groups[1].value}).split('=')[-1].split("&")[0]
       $video_Length = (Get-BrightcoveVideoLength $Video_ID).toString('hh\:mm\:ss')
       $transcript = Get-TranscriptAvailable $iframe
       if($transcript){$transcript = "Yes"}
@@ -109,9 +109,9 @@ function Process-Iframes{
       AddToArray "H5P" $item.title "" "00:00:00" $title "N\A"
     }
     elseif($iframe.contains('byu.mediasite')){
-      $video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].Value}).split('/')[-1]
+      $video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | ForEach-Object {$_.Matches.Groups[1].Value}).split('/')[-1]
       if($video_ID -eq ""){
-        $video_id = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].Value}).split('/')[-2]
+        $video_id = ($iframe | Select-String -pattern 'src="(.*?)"' | ForEach-Object {$_.Matches.Groups[1].Value}).split('/')[-2]
       }
       $video_Length = (Get-BYUMediaSiteVideoLength $Video_ID).toString('hh\:mm\:ss')
       $transcript = Get-TranscriptAvailable $iframe
@@ -120,7 +120,7 @@ function Process-Iframes{
       AddToArray "BYU Mediasite Video" $item.title $video_ID $video_Length "$title$videoNotFound" $transcript
     }
     elseif($iframe.contains('Panopto')){
-      $video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].Value}).split('=').split('&')[1]
+      $video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | ForEach-Object {$_.Matches.Groups[1].Value}).split('=').split('&')[1]
       $video_Length = (Get-PanoptoVideoLength $video_ID).toString('hh\:mm\:ss')
       $transcript = Get-TranscriptAvailable $iframe
       if($transcript){$transcript = "Yes"}
@@ -133,10 +133,10 @@ function Process-Iframes{
   }
 }
 
-function Process-VideoTags{
-    $videotag_list = $page_body | Select-String -pattern '<video.*?>.*?</video>' -AllMatches | %{$_.Matches.Value}
+function Start-ProcessVideoTags{
+    $videotag_list = $page_body | Select-String -pattern '<video.*?>.*?</video>' -AllMatches | ForEach-Object {$_.Matches.Value}
     foreach($video in $videotag_list){
-      $src = $video | Select-String -pattern 'src="(.*?)"' -AllMatches | % {$_.Matches.Groups[1].Value}
+      $src = $video | Select-String -pattern 'src="(.*?)"' -AllMatches | ForEach-Object {$_.Matches.Groups[1].Value}
       $videoID = $src.split('=')[1].split("&")[0]
       $transcript = Get-TranscriptAvailable $video
       if($transcript){$transcript = "Yes"}
@@ -145,9 +145,9 @@ function Process-VideoTags{
     }
 }
 
-function Process-BrightcoveVideoHTML{
-  $brightcove_list = $page_body | Select-String -pattern 'id="[^\d]*(\d{13}).*?"' -Allmatches | % {$_.Matches.Value}
-  $id_list = $brightcove_list | Select-String -pattern '\d{13}' -AllMatches | % {$_.matches.Value}
+function Start-ProcessBrightcoveVideoHTML{
+  $brightcove_list = $page_body | Select-String -pattern 'id="[^\d]*(\d{13}).*?"' -Allmatches | ForEach-Object {$_.Matches.Value}
+  $id_list = $brightcove_list | Select-String -pattern '\d{13}' -AllMatches | ForEach-Object {$_.matches.Value}
   foreach($id in $id_list){
     $video_Length = (Get-BrightcoveVideoLength $id).toString('hh\:mm\:ss')
     $transcriptCheck = $page_body.split("`n")

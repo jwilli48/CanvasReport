@@ -1,4 +1,4 @@
-function Transpose-Data{
+function Format-TransposeData{
     param(
         [String[]]$Names,
         [Object[][]]$Data
@@ -26,7 +26,7 @@ function Get-BrightcoveVideoLength {
     $length = (Wait-UntilElementIsVisible -Selector div[class*='runtime'] -byCssSelector).text
   }catch{
     try{
-    $chrome.url = "https:" + ($iframe | Select-String -pattern 'src="(.*?)"' | % {$_.Matches.Groups[1].value})
+    $chrome.url = "https:" + ($iframe | Select-String -pattern 'src="(.*?)"' | ForEach-Object {$_.Matches.Groups[1].value})
     (Wait-UntilElementIsVisible -Selector button.vjs-big-play-button -byCssSelector).click()
     $length = (Wait-UntilElementIsVisible -Selector div[class*="vjs-duration-display"] -byCssSelector).text.split("`n")[-1]
     }catch{
@@ -42,7 +42,7 @@ function Get-BrightcoveVideoLength {
 
 function Get-GoogleVideoSeconds ([string]$VideoID){
  $gdata_uri = "https://www.googleapis.com/youtube/v3/videos?id=$VideoId&key=$GoogleApi&part=contentDetails"
- $metadata = irm $gdata_uri
+ $metadata = Invoke-RestMethod $gdata_uri
  $duration = $metadata.items.contentDetails.duration;
 
  $ts = [Xml.XmlConvert]::ToTimeSpan("$duration")
@@ -99,7 +99,7 @@ function Get-TranscriptAvailable{
   $check = $page_body.split("`n")
   $i = 0
   while(-not $check[$i].contains($iframe)){$i++}
-  if($check[$i+1] -ne $NULL){
+  if($NULL -ne $check[$i+1]){
     if($check[$i+1].contains('Transcript')){
       return $true
     }
