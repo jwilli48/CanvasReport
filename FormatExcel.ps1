@@ -76,7 +76,7 @@ function ConvertTo-A11yExcel{
       }"Empty link tag"{
         AddToCell "Link" "Broken Link" "$($data[$i].Text)"
       }"Flash is inaccessible"{
-        AddToCell "Misc" "" "$($data[$i].Text)`n$($data[$i].Accessibility)"
+        AddToCell "Misc" "" "$($data[$i].Text).`n$($data[$i].Accessibility)"
       }default{
         AddToCell "" "" "$($data[$i].Element), $($data[$i].Text)"
       }
