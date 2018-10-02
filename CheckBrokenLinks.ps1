@@ -74,7 +74,7 @@ function Start-ProcessLinks{
       elseif($_.Exception.Status -eq "SecureChannelFailure"){
         AddToArray $item.title $href "Check link"
       }else{
-        AddToArray $item.title $href "Unkown error, check link"
+        AddToArray $item.title $href "Unknown error, check link"
       }
     }
   }

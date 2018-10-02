@@ -46,7 +46,7 @@ function Start-ProcessLinks{
     }
   }
 
-  $href_list = $link_list | Select-String -pattern 'href="(.*?)"' -AllMatches | ForEach-Object {$_.Matches.Groups[1].Value}
+  #$href_list = $link_list | Select-String -pattern 'href="(.*?)"' -AllMatches | ForEach-Object {$_.Matches.Groups[1].Value}
 
   <#Checks broken links, not needed since Canvas has it built in
   if($Global:CheckLinks -eq $NULL){
@@ -223,7 +223,7 @@ function Start-ProcessHeaders{
   $accessibility = ""
   foreach($header in $headerList){
     $headerLevel = $header | Select-String -Pattern "<h(\d)" -Allmatches | ForEach-Object {$_.matches.Groups[1].Value}
-    $headerText = $header | Select-String -pattern '<h\d.*?>(.*?)</h\d>' -AllMatches | ForEach-Object {$_.Matches.Groups[1].Value}
+    #$headerText = $header | Select-String -pattern '<h\d.*?>(.*?)</h\d>' -AllMatches | ForEach-Object {$_.Matches.Groups[1].Value}
     switch -regex ($header)
     {
       'class=".*?screenreader-only.*?"'{
