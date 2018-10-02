@@ -331,7 +331,7 @@ function Start-ProcessVideoTags{
 
 function Start-ProcessFlash{
   if($page_body -match "Content on this page requires a newer version of Adobe Flash Player"){
-    AddToArray "Flash Element" "$($item.url -split `"api/v\d/`" -join `"`")" "" "There are $($page_body.split("`n") -match "Content on this page requires a newer version of Adobe Flash Player" | Measure-Object | Select-Object -ExpandProperty Count) embeded flash elements on this page" "Flash is inaccessible"
+    AddToArray "Flash Element" "$($item.url -split `"api/v\d/`" -join `"`")" "" "$($page_body.split("`n") -match "Content on this page requires a newer version of Adobe Flash Player" | Measure-Object | Select-Object -ExpandProperty Count) embeded flash elements on this page" "Flash is inaccessible"
   }
 }
 
