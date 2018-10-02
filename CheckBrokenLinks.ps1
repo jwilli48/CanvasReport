@@ -81,7 +81,7 @@ function Start-ProcessLinks{
 
   #Check images to see if their src exists
   $image_list = $page_body | Select-String -pattern "<img.*?>" -AllMatches | ForEach-Object {$_.Matches.Value}
-  $src_list = $page_body | Select-String -pattern 'src=".*?"' -AllMatches | ForEach-Object {$_.Matches.Groups[1].Value}
+  $src_list = $image_list | Select-String -pattern 'src="(.*?)"' -AllMatches | ForEach-Object {$_.Matches.Groups[1].Value}
   foreach($src in $src_list){
         if ($src -notmatch "http" -and $src -notmatch "^www\." -and $src -notmatch ".*?\.com$" -and $src -notmatch ".*?\.org$") {
             if ($src -match "^\.\.") {
