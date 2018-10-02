@@ -113,7 +113,8 @@ function AddToArray{
 Search-Directory $course_id
 
 $data = Format-TransposeData Location, URL, Status $Global:location, $Global:href, $Global:status
-$Global:ExcelReport = $PSScriptRoot + "\Reports\LinkCheck_" + $courseName + ".xlsx"
+$Global:ReportType = "$($Directory[0])Drive"
+$Global:ExcelReport = $PSScriptRoot + "\Reports\LinkCheck_$($courseName)_$($ReportType).xlsx"
 if(-not ($NULL -eq $data)){
   $data | Export-Excel $ExcelReport -AutoFilter -AutoSize -Append
   Write-Host "Report saved to $ExcelReport"
