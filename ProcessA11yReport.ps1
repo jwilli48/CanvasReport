@@ -71,6 +71,7 @@ function Start-ProcessLinks{
       }
     }
   }#>
+  
   $link_text = $link_list | Select-String -pattern '<a.*?>(.*?)</a>' -AllMatches | ForEach-Object {$_.Matches.Groups[1].Value}
   foreach($text in $link_text){
     switch -regex ($text)

@@ -78,6 +78,21 @@ function Start-ProcessLinks{
       }
     }
   }
+  $image_list = $page_body | Select-String -pattern "<img.*?>" -AllMatches | ForEach-Object {$_.Matches.Value}
+  $src_list = $page_body | Select-String -pattern 'src=".*?"' -AllMatches | ForEach-Object {$_.Matches.Groups[1].Value}
+  foreach($src in $src_list){
+        if ($src -notmatch "http" -and $src -notmatch "^www\." -and $src -notmatch ".*?\.com$" -and $src -notmatch ".*?\.org$") {
+            if ($src -match "^\.\.") {
+                if (-not (Test-Path (("$($course_id.split(`"\`").replace(`"HTML`",`"`") -join `"\`")$($src.split(`"/`").replace(`"..`",$NULL) -join `"\`")") -replace "\\\\", "\"))) {
+                    AddToArray $item.title $src "File path doesn't exist"
+                }
+            }
+            elseif (-not (Test-Path "$course_id\$src")) {
+                AddToArray $item.title $src "File doesn't exist"
+            }
+            continue#Flash elements use a link to an image, don't want to check those. Rest of the images should be contained in the same file directory
+        }
+  }
 }
 
 function AddToArray{
