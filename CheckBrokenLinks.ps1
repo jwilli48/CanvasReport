@@ -37,7 +37,7 @@ function Search-Directory{
       $page_body = $item.body
       Write-Host $item.title -ForegroundColor Green
 
-      if($page_body -eq '' -or $page_body -eq $NULL){
+      if($page_body -eq '' -or $NULL -eq $page_body){
         continue
       }
       Start-ProcessLinks $page_body
@@ -92,7 +92,7 @@ function Start-ProcessLinks{
             elseif (-not (Test-Path "$course_id\$src")) {
                 AddToArray $item.title $src "File doesn't exist"
             }
-            continue#Flash elements use a link to an image, don't want to check those. Rest of the images should be contained in the same file directory
+            continue
         }
   }
 }
