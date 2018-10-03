@@ -52,6 +52,9 @@ function Start-ProcessLinks{
     if($href -match "^#" -or $href -match "^mailto:"){
       #these can't be checked by the program
       continue
+    }elseif($href -match "^javascript:"){
+      AddToArray $item.title $href "JavaScript links are often not accessible."
+      continue
     }
     if($href -notmatch "http" -and $href -notmatch "^www\." -and $href -notmatch ".*?\.com$" -and $href -notmatch ".*?\.org$"){
         if($href -match "^\.\."){
