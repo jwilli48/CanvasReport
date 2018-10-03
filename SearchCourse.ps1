@@ -77,7 +77,12 @@ function Search-Directory{
       Write-Progress -Activity "Checking pages" -Status "Progress:" -PercentComplete ($i/$course_files.length * 100)
 
       $file_content = Get-Content -Encoding UTF8 -Path $file.PSpath -raw
-      $item = Format-TransposeData body, title, url $file_content, $file.name, "file:///$directory/$($file.name)"
+      if($Directory[0] -eq "I"){
+        $url = "https://iscontent.byu.edu/$($directory -replace `"I:\\`", `"`")/$($file.name)"
+      }else{
+        $url = "file:///$directory/$($file.name)"
+      }
+      $item = Format-TransposeData body, title, url $file_content, $file.name, $url
       $page_body = $item.body
       Write-Host $item.title -ForegroundColor Green
 
