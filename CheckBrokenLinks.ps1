@@ -59,7 +59,7 @@ function Start-ProcessLinks{
             AddToArray $item.title $href "File path doesn't exist"
           }
         }
-        elseif(-not (Test-Path "$course_id\$href")){
+        elseif(-not (Test-Path "$course_id\$($href.split("#")[0])")){
           AddToArray $item.title $href "File doesn't exist"
         }
         continue
