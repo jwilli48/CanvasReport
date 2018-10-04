@@ -17,6 +17,7 @@ To run this program from PowerShell if your PowerShell execution policy is restr
 3. Run the script
 	.\Generate_Canvas_Accessibility_Report.ps1
 	.\Generate_Canvas_Media_Report.ps1
+	.\CheckBrokenLinks.ps1
 
 If you wish to be able to run the program without doing the above every time, then do the following:
 1. Run the following command in any PowerShell window
@@ -24,9 +25,11 @@ If you wish to be able to run the program without doing the above every time, th
 2. You can then just right click the program and hit 'Run with PowerShell'
 
 ## Reports
-The report will be generated and saved to the Report folder within this directory. If you try to create a 2nd report for a course while there is a previous one still there it will just add to the bottom of the previous one instead of creating a new one.
+The report will be generated and saved to the Report folder within this directory. If you try to create a 2nd report for a course while there is a previous one still there it will throw an error and be unable to save any of the found items.
 
 I added another .exe to check a directory of HTML files for any broken links or file paths. Similar to the others, just outputs to an excel sheet with the links or file paths that threw errors. As Canvas has it's own built in link checker, I did not make it so the program will check anything other then HTML files.
+
+The location column in the table will also become hyperlinks to the page that contains that specific issue. This will work both for HTML directory reports and Canvas reports (although if the files are located on a different drive it may be extremely slow / freeze).
 
 ### Accessibility Template
 The template used for the Accessibility Report is the CAR - Accessibility Review Template.xlsx
@@ -37,7 +40,7 @@ There is also a worksheet that links to a bunch of the WCAG guidelines for acces
 
 ## First time running
 ***IMPORTANT:***
-You may need to unblock the .dll files contained in the net40 folder if you wish to run the Media Report generator. I believe this can also be done all at once if you unblock the .zip file before extracting it.
+~~You may need to unblock the .dll files contained in the net40 folder if you wish to run the Media Report generator. I believe this can also be done all at once if you unblock the .zip file before extracting it.~~ This is no longer needed and the files will be unblocked as part of the script.
 
 The first time you run this it will ask you to input your Canvas API and the Canvas Default URL, as well as Brightcove credentials and a Google API
 1.You will need to generate your own API from your Account Settings in Canvas
@@ -52,7 +55,7 @@ In order for this program to scan YouTube videos for closed captioning, you will
 4. Create an API key
 
 ## BUGS
-
+One issues that I seem unable to fix is if the location links are to a file that is located on a seperate drive then excel, it will cause excel to dramtically slow down / freeze when any of the links to those files are accessed.
 
 ## RECOGNICTION
 Inspired by the VAST program originally created by the University of Central Florida at https://github.com/ucfopen/VAST
@@ -70,19 +73,3 @@ It does not catch every accessibility issue. For example:
 
 What it can not check:
 1. Rubrics within Quizzes / Assignments / Asessments as they are not stored as an HTML table
-
-# File directory
-1. Files needed for accessibility report:
-	1. Generate_Canvas_Accessibility_Report.ps1 (.exe, .exe.config as well)
-	2. ProcessA11yReport.ps1
-2. Files needed for media report:
-	1. Generate_Canvas_Media_Report.ps1 (.exe, .exe.config as well)
-	2. ProcessMediaReport.ps1
-	9. BrightCoveSetUp.ps1
-3. Files needed for both:
-	1. SearchCourse.ps1
-	2. Notifications.ps1
-	3. FormatExcel.ps1
-	4. Util.ps1
-	5. PoshCanvasNew.ps1
-	6. CheckModules.ps1
