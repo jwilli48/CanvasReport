@@ -109,14 +109,14 @@ function AddToArray{
   $Global:location += $locationIn
   $Global:href += $hrefIn
   $Global:status += $statusIn
-
 }
+
 #Maybe this will get rid of the SecureChannelFailure
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 Search-Directory $course_id
 
 $data = Format-TransposeData Location, URL, Status $Global:location, $Global:href, $Global:status
-$Global:ReportType = "$($Directory[0])Drive"
+$Global:ReportType = "$($course_id[0])Drive"
 $Global:ExcelReport = $PSScriptRoot + "\Reports\LinkCheck_$($courseName)_$($ReportType).xlsx"
 if(-not ($NULL -eq $data)){
   $data | Export-Excel $ExcelReport -AutoFilter -AutoSize -Append
