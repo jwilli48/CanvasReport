@@ -10,7 +10,7 @@ function Process_Contents{
   $Global:transcriptAvailability = [System.Collections.ArrayList]::new()
   $Global:mediaCountList = [System.Collections.ArrayList]::new()
 
-  $Global:ExcelReport = $PSScriptRoot + "\Reports\MediaReport_" + $courseName + ".xlsx"
+    $Global:ExcelReport = $PSScriptRoot + "\Reports\MediaReport_" + $courseName + "_$ReportType.xlsx"
 
   Start-ProcessLinks
   Start-ProcessIframes
