@@ -316,10 +316,10 @@ function Start-ProcessFlash{
 function Start-ProcessColor {
     $colorList = $page_body -split "`n" | Select-String -Pattern "color:([^;`"]*)" -Allmatches | ForEach-Object {$_.Matches.Groups[1].Value}
   Foreach($color in $colorList){
-    $color = $color.replace("#","")
+    $color = $color.replace("#","").replace(" ","")
     $results = (Invoke-WebRequest -Uri "https://webaim.org/resources/contrastchecker/?fcolor=$color&bcolor=FFFFFF&api").Content | ConvertFrom-Json
     if($results.AA -ne 'pass'){
-      AddToArray "Color Contrast" "$($item.url -split `"api/v\d/`" -join `"`")" "" "$($results -replace `"@{`", `"`" -replace `"}`",`"`" -replace `" `", `"`" -split `"`;`" -join "`n")" "Does not meet AA color contrast"
+      AddToArray "Color Contrast" "$($item.url -split `"api/v\d/`" -join `"`")" "" "$($results -replace `"@{`", `"`" -replace `"}`",`"`" -replace `" `", `"`" -split `"`;`" -join "`n")" "Does not meet AA color contrast:`nColor: $color"
     }
   }
 }
