@@ -18,6 +18,7 @@ function Process_Contents{
   Start-ProcessVideoTags
   Start-ProcessBrightcoveVideoHTML
   Start-ProcessFlash
+  Start-ProcessColor
 
   $data = Format-TransposeData Element, Location, VideoID, Text, Accessibility, IssueSeverity $elementList, $locationList, $videoIDList, $textList, $AccessibilityList, $issueSeverityList
   $Global:ExcelReport = $PSScriptRoot + "\Reports\A11yReport_" + $courseName + "_$ReportType.xlsx"
@@ -309,6 +310,17 @@ function Start-ProcessVideoTags{
 function Start-ProcessFlash{
   if($page_body -match "Content on this page requires a newer version of Adobe Flash Player"){
     AddToArray "Flash Element" "$($item.url -split `"api/v\d/`" -join `"`")" "" "$($page_body.split("`n") -match "Content on this page requires a newer version of Adobe Flash Player" | Measure-Object | Select-Object -ExpandProperty Count) embedded flash elements on this page" "Flash is inaccessible"
+  }
+}
+
+function Start-ProcessColor {
+    $colorList = $page_body | Select-String -Pattern "color:([^;`"])*" -Allmatches | ForEach-Object {$_.Matches.Groups[1].Value}
+  Foreach($color in $colorList){
+    $color = $color.replace("#","")
+    $results = (Invoke-WebRequest -Uri "https://webaim.org/resources/contrastchecker/?fcolor=$color&bcolor=FFFFFF&api").Content | ConvertFrom-Json
+    if($results.AA -ne 'pass'){
+            AddToArray "Color Contrast" "$($item.url -split `"api/v\d/`" -join `"`")" "" "$($results -replace `"@{`", `"`" -replace `"}`",`"`" -replace `" `", `"`" -split `"`;`" -join "`n")" "Does not meet AA color contrast, please review."
+    }
   }
 }
 
