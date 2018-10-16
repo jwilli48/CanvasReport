@@ -95,9 +95,9 @@ function Search-Directory{
     if((Test-Path $PathToCss)){
       $file_content = Get-Content -Encoding UTF8 -Path $PathToCss -raw
       if($PathToCss[0] -eq "I"){
-        $url = "https://iscontent.byu.edu/$($PathToCss -replace `"I:\\`", `"`")/$($file_content.PSChildName)"
+        $url = "https://iscontent.byu.edu/$($PathToCss -replace `"I:\\`", `"`")"
       }else{
-        $url = "file:///$PathToCss/$($file_content.PSChildName)"
+        $url = "file:///$PathToCss"
       }
       $item = Format-TransposeData body, title, url $file_content, $file_content.PSChildName, $url
       Write-Host $item.title -ForegroundColor Green
