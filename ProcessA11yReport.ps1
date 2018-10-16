@@ -319,7 +319,7 @@ function Start-ProcessColor {
     $color = $color.replace("#","").replace(" ","")
     $results = (Invoke-WebRequest -Uri "https://webaim.org/resources/contrastchecker/?fcolor=$color&bcolor=FFFFFF&api").Content | ConvertFrom-Json
     if($results.AA -ne 'pass'){
-      AddToArray "Color Contrast" "$($item.url -split `"api/v\d/`" -join `"`")" "" "$($results -replace `"@{`", `"`" -replace `"}`",`"`" -replace `" `", `"`" -split `"`;`" -join "`n")" "Does not meet AA color contrast:`nColor: $color"
+      AddToArray "Color Contrast" "$($item.url -split `"api/v\d/`" -join `"`")" "" "Color: $color`n$($results -replace `"@{`", `"`" -replace `"}`",`"`" -replace `" `", `"`" -split `"`;`" -join "`n")" "Does not meet AA color contrast"
     }
   }
 }
