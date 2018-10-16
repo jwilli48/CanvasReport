@@ -100,6 +100,10 @@ function Search-Directory{
         $url = "file:///$PathToCss/$($file_content.PSChildName)"
       }
       $item = Format-TransposeData body, title, url $file_content, $file_content.PSChildName, $url
+      Write-Host $item.title -ForegroundColor Green
+
+      $page_body = $item.body
+      Process_Contents $page_body
     }
   }
 }
