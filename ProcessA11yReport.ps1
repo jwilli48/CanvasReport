@@ -295,7 +295,7 @@ function Start-ProcessSemantics{
 }
 
 function Start-ProcessVideoTags{
-    $videotag_list = $page_body | Select-String -pattern '<video.*?>.*?</video>' -AllMatches | ForEach-Object {$_.Matches.Value}
+    $videotag_list = $page_body -split "`n" | Select-String -pattern '<video.*?>.*?</video>' -AllMatches | ForEach-Object {$_.Matches.Value}
     foreach($video in $videotag_list){
       $src = $video | Select-String -pattern 'src="(.*?)"' -AllMatches | ForEach-Object {$_.Matches.Groups[1].Value}
       $videoID = $src.split('=')[1].split("&")[0]
@@ -314,7 +314,7 @@ function Start-ProcessFlash{
 }
 
 function Start-ProcessColor {
-    $colorList = $page_body | Select-String -Pattern "color:([^;`"]*)" -Allmatches | ForEach-Object {$_.Matches.Groups[1].Value}
+    $colorList = $page_body -split "`n" | Select-String -Pattern "color:([^;`"]*)" -Allmatches | ForEach-Object {$_.Matches.Groups[1].Value}
   Foreach($color in $colorList){
     $color = $color.replace("#","")
     $results = (Invoke-WebRequest -Uri "https://webaim.org/resources/contrastchecker/?fcolor=$color&bcolor=FFFFFF&api").Content | ConvertFrom-Json
