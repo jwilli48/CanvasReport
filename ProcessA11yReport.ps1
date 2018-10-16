@@ -314,7 +314,7 @@ function Start-ProcessFlash{
 }
 
 function Start-ProcessColor {
-    $colorList = $page_body | Select-String -Pattern "color:([^;`"])*" -Allmatches | ForEach-Object {$_.Matches.Groups[1].Value}
+    $colorList = $page_body | Select-String -Pattern "color:([^;`"]*)" -Allmatches | ForEach-Object {$_.Matches.Groups[1].Value}
   Foreach($color in $colorList){
     $color = $color.replace("#","")
     $results = (Invoke-WebRequest -Uri "https://webaim.org/resources/contrastchecker/?fcolor=$color&bcolor=FFFFFF&api").Content | ConvertFrom-Json
