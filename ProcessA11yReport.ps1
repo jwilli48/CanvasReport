@@ -318,9 +318,8 @@ function Start-ProcessColor {
   Foreach($color in $colorList){
     $color = $color.replace("#","")
     $results = (Invoke-WebRequest -Uri "https://webaim.org/resources/contrastchecker/?fcolor=$color&bcolor=FFFFFF&api").Content | ConvertFrom-Json
-    $results
     if($results.AA -ne 'pass'){
-      AddToArray "Color Contrast" "$($item.url -split `"api/v\d/`" -join `"`")" "" "$($results -replace `"@{`", `"`" -replace `"}`",`"`" -replace `" `", `"`" -split `"`;`" -join "`n")" "Does not meet AA color contrast, please review."
+      AddToArray "Color Contrast" "$($item.url -split `"api/v\d/`" -join `"`")" "" "$($results -replace `"@{`", `"`" -replace `"}`",`"`" -replace `" `", `"`" -split `"`;`" -join "`n")" "Does not meet AA color contrast"
     }
   }
 }

@@ -80,8 +80,9 @@ function ConvertTo-A11yExcel {
             }"Flash is inaccessible" {
                 AddToCell "Misc" "" "$($data[$i].Text).`n$($data[$i].Accessibility)"
                 break;
-            }"Does not meet AA color contrast, please review." {
-              AddToCell "Color" "Doesn't meet contrast ratio" "$($data[$i].Accessibility)`n$($data[$i].Text)"
+            }"Does not meet AA color contrast" {
+                AddToCell "Color" "Doesn't meet contrast ratio" "$($data[$i].Accessibility):`n$($data[$i].Text)"
+                break;
             }default {
                 AddToCell "" "" "$($data[$i].Element), $($data[$i].Text)"
                 break;
