@@ -92,7 +92,7 @@ function Search-Directory{
       Process_Contents $page_body
     }
     $PathToCss = "$($Directory.replace("HTML","CSS"))\this_course_only.css"
-    if((Test-Path $PathToCss){
+    if((Test-Path $PathToCss)){
       $file_content = Get-Content -Encoding UTF8 -Path $PathToCss -raw
       if($PathToCss[0] -eq "I"){
         $url = "https://iscontent.byu.edu/$($PathToCss -replace `"I:\\`", `"`")/$($file_content.PSChildName)"
