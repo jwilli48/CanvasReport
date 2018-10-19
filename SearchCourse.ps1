@@ -87,6 +87,9 @@ function Search-Directory {
             if ($Directory[0] -eq "I") {
                 $url = "https://iscontent.byu.edu/$($directory -replace `"I:\\`", `"`")/$($file.name)"
             }
+            elseif ($Directory[0] -eq "Q") {
+                $url = "https://isdev.byu.edu/courses/$($directory -replace `"Q:\\`", `"`")/$($file.name)"
+            }
             else {
                 $url = "file:///$directory/$($file.name)"
             }
@@ -102,12 +105,8 @@ function Search-Directory {
         $PathToCss = "$($Directory.replace("HTML","CSS"))\this_course_only.css"
         if ((Test-Path $PathToCss)) {
             $file_content = Get-Content -Encoding UTF8 -Path $PathToCss -raw
-            if ($PathToCss[0] -eq "I") {
-                $url = "https://iscontent.byu.edu/$($PathToCss -replace `"I:\\`", `"`")"
-            }
-            else {
-                $url = "file:///$PathToCss"
-            }
+            $url = "file:///$PathToCss"
+            
             $item = Format-TransposeData body, title, url $file_content, $file_content.PSChildName, $url
             Write-Host $item.title -ForegroundColor Green
 
