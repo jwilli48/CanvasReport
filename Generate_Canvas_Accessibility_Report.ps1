@@ -11,20 +11,22 @@ Import-Module "$home/Desktop/AccessibilityTools/CanvasReport-master/SearchCourse
 $course_id = Read-Host "Enter Canvas Course ID or path to course HTML files"
 $directory = $FALSE
 
-if($course_id -match "[A-Z]:\\"){
-  $directory = $true
-}else{
-  ."$home/Desktop/AccessibilityTools/CanvasReport-master/SetDomain.ps1"
+if ($course_id -match "[A-Z]:\\") {
+    $directory = $true
+}
+else {
+    ."$home/Desktop/AccessibilityTools/CanvasReport-master/SetDomain.ps1"
 }
 
 $sw = [Diagnostics.Stopwatch]::new()
 $sw.start()
 
 Get-Modules
-if($directory){
-  Search-Directory $course_id
-}else{
-  Search-Course $course_id
+if ($directory) {
+    Search-Directory $course_id
+}
+else {
+    Search-Course $course_id
 }
 
 #Excel formatting

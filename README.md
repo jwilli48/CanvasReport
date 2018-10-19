@@ -24,6 +24,8 @@ If you wish to be able to run the program without doing the above every time, th
 	Set-ExecutionPolicy Bypass -Scope CurrentUser
 2. You can then just right click the program and hit 'Run with PowerShell'
 
+	-Warning that this will also allow you to run any (possibly malicious) scripts you download from the internet without asking for permission.
+
 ## Reports
 The report will be generated and saved to the Report folder within this directory. If you try to create a 2nd report for a course while there is a previous one still there it will throw an error and be unable to save any of the found items.
 
