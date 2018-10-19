@@ -84,7 +84,7 @@ function ConvertTo-A11yExcel {
                 AddToCell "Color" "Doesn't meet contrast ratio" "$($data[$i].Accessibility):`n$($data[$i].Text)"
                 break;
             }default {
-                AddToCell "" "" "$($data[$i].Element), $($data[$i].Text)"
+                AddToCell "" "" "$($data[$i].Element), `n$($data[$i].Text),`n$($data[$i].Accessibility)"
                 break;
             }
         }

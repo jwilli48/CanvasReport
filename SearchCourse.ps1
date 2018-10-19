@@ -93,6 +93,7 @@ function Search-Directory {
             else {
                 $url = "file:///$directory/$($file.name)"
             }
+            
             $item = Format-TransposeData body, title, url $file_content, $file.name, $url
             $page_body = $item.body
             Write-Host $item.title -ForegroundColor Green
@@ -102,11 +103,12 @@ function Search-Directory {
             }
             Process_Contents $page_body
         }
+        
         $PathToCss = "$($Directory.replace("HTML","CSS"))\this_course_only.css"
         if ((Test-Path $PathToCss)) {
             $file_content = Get-Content -Encoding UTF8 -Path $PathToCss -raw
             $url = "file:///$PathToCss"
-            
+
             $item = Format-TransposeData body, title, url $file_content, $file_content.PSChildName, $url
             Write-Host $item.title -ForegroundColor Green
 
