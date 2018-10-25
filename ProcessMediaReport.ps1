@@ -92,6 +92,7 @@ function Start-ProcessIframes {
                 $Video_ID = $VideoLink.split('/')[-1]
             }
             try {
+                $Video_ID = $Video_ID.split('?')[0]
                 $video_Length = [timespan]::fromseconds((Get-GoogleVideoSeconds -VideoID $Video_ID)).toString("hh\:mm\:ss")
             }
             catch {
