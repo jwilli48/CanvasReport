@@ -54,6 +54,7 @@ function Start-ProcessLinks {
                     $VideoID = $href.split('/')[-1]
                 }
                 try {
+                    $VideoID = $VideoID.split("?")[0]
                     $video_Length = [timespan]::fromseconds((Get-GoogleVideoSeconds -VideoID $VideoID)).toString("hh\:mm\:ss")
                 }
                 catch {
