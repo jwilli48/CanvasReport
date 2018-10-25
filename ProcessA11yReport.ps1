@@ -36,7 +36,7 @@ function Process_Contents {
 function Start-ProcessLinks {
     $link_list = $page_body | Select-String -pattern "<a.*?>.*?</a>" -AllMatches | ForEach-Object {$_.Matches.Value}
     foreach ($link in $link_list) {
-        if ($link -match 'onlick') {
+        if ($link -match 'onclick') {
             AddToArray "JavaScript Link" "$($item.url -split `"api/v\d/`" -join `"`")" "" $link "JavaScript links are not accessible"
         }elseif (-not $link.contains('href')) {
             AddToArray "Link" "$($item.url -split `"api/v\d/`" -join `"`")" "" $link "Empty link tag"
