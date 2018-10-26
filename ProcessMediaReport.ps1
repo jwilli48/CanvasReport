@@ -125,7 +125,7 @@ function Start-ProcessIframes {
             $transcript = Get-TranscriptAvailable $iframe
             if ($transcript) {$transcript = "Yes"}
             else {$transcript = "No"}
-            AddToArray "BYU Mediasite Video" "$($item.url -split `"api/v\d/`" -join `"`")" $video_ID $video_Length "$title$videoNotFound" $transcript $url
+            AddToArray "BYU Mediasite Video" "$($item.url -split `"api/v\d/`" -join `"`")" $video_ID $video_Length "$title$videoNotFound" $transcript "http://players.brightcove.net$url"
         }
         elseif ($iframe.contains('Panopto')) {
             $video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | ForEach-Object {$_.Matches.Groups[1].Value}).split('=').split('&')[1]
@@ -135,6 +135,7 @@ function Start-ProcessIframes {
             else {$transcript = "No"}
             AddToArray "Panopto Video" "$($item.url -split `"api/v\d/`" -join `"`")" $video_ID $video_Length "$title$videoNotFound" $transcript $url
         }
+        elseif ($iframe.contains(''))
         else {
             AddToArray "Iframe" "$($item.url -split `"api/v\d/`" -join `"`")" "" "00:00:00" $title "N\A" $url
         }

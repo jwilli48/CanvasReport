@@ -173,7 +173,7 @@ function Format-MediaExcel1 {
         Set-Format -WorkSheet $sheet -Range "E:E" -NumberFormat "hh:mm:ss"
         Set-Format -WorkSheet $sheet -Range "C:C" -NumberFormat "#############"
         
-        $cell = $exce.Workbook.Worksheets["Sheet1"].Cells
+        $cell = $excel.Workbook.Worksheets["Sheet1"].Cells
         $column = 2 #C
         $row = 2 #start of data
         while ($NULL -ne $cell[$row, $column].Value) {
