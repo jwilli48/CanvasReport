@@ -5,6 +5,7 @@ function Process_Contents {
     $Global:elementList = [System.Collections.ArrayList]::new()
     $Global:locationList = [System.Collections.ArrayList]::new()
     $Global:videoIDList = [System.Collections.ArrayList]::new()
+    $Global:UrlList = [System.Collections.ArrayList]::new()
     $Global:videoLengthList = [System.Collections.ArrayList]::new()
     $Global:textList = [System.Collections.ArrayList]::new()
     $Global:transcriptAvailability = [System.Collections.ArrayList]::new()
@@ -17,7 +18,7 @@ function Process_Contents {
     Start-ProcessBrightcoveVideoHTML
     Start-ProcessVideoTags
 
-    $data = Format-TransposeData Element, Location, VideoID, VideoLength, Text, Transcript, MediaCount $elementList, $locationList, $videoIDList, $videoLengthList, $textList, $transcriptAvailability, $mediaCountList
+    $data = Format-TransposeData Element, Location, VideoID, Url, VideoLength, Text, Transcript, MediaCount $elementList, $locationList, $videoIDList, $UrlList, $videoLengthList, $textList, $transcriptAvailability, $mediaCountList
     $markRed = @((New-ConditionalText -Text "Video not found" -BackgroundColor '#ff5454' -ConditionalTextColor '#000000'))
     $highlight = @((New-ConditionalText -Text "Duplicate Video" -BackgroundColor '#ffff8b' -ConditionalTextColor '#000000' ))
     $markBlue = @((New-ConditionalText -Text "Inline Media:`nUnable to find title or video length for this type of video" -BackgroundColor Cyan -ConditionalTextColor '#000000'))
@@ -62,7 +63,8 @@ function Start-ProcessLinks {
                     $video_length = "00:00:00"
                     $Global:videoNotFound = "`nVideo not found"
                 }
-                AddToArray "Youtube Link" $item.title $VideoID $video_Length "$href$videoNotFound" "Yes"; break
+                AddToArray "Youtube Link" $item.title $VideoID $video_Length "$href$videoNotFound" "Yes" $href
+                break
             }
             Default {}
         }
@@ -83,7 +85,7 @@ function Start-ProcessIframes {
                 $title = "Title found but was empty or could not be saved."
             }
         }
-
+        $url = $iframe | Select-String -pattern 'src="(.*?)"' | ForEach-Object {$_.Matches.Groups[1].value}
         if ($iframe.contains('youtube')) {
             $VideoLink = $iframe | Select-String -pattern 'src="(.*?)"' | ForEach-Object {$_.Matches.Groups[1].value}
             if ($VideoLink.contains('?')) {
@@ -101,7 +103,7 @@ function Start-ProcessIframes {
                 $video_length = "00:00:00"
                 $Global:videoNotFound = "`nVideo not found"
             }
-            AddToArray "Youtube Video" $item.title $video_ID $video_Length "$title$videoNotFound" "Yes"
+            AddToArray "Youtube Video" $item.title $video_ID $video_Length "$title$videoNotFound" "Yes" $Url
         }
         elseif ($iframe.contains('brightcove')) {
             $Video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | ForEach-Object {$_.Matches.Groups[1].value}).split('=')[-1].split("&")[0]
@@ -109,10 +111,10 @@ function Start-ProcessIframes {
             $transcript = Get-TranscriptAvailable $iframe
             if ($transcript) {$transcript = "Yes"}
             else {$transcript = "No"}
-            AddToArray "Brightcove Video" $item.title $video_ID $video_Length "$title$videoNotFound" $transcript
+            AddToArray "Brightcove Video" $item.title $video_ID $video_Length "$title$videoNotFound" $transcript $url
         }
         elseif ($iframe.contains('H5P')) {
-            AddToArray "H5P" $item.title "" "00:00:00" $title "N\A"
+            AddToArray "H5P" $item.title "" "00:00:00" $title "N\A" $url
         }
         elseif ($iframe.contains('byu.mediasite')) {
             $video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | ForEach-Object {$_.Matches.Groups[1].Value}).split('/')[-1]
@@ -123,7 +125,7 @@ function Start-ProcessIframes {
             $transcript = Get-TranscriptAvailable $iframe
             if ($transcript) {$transcript = "Yes"}
             else {$transcript = "No"}
-            AddToArray "BYU Mediasite Video" $item.title $video_ID $video_Length "$title$videoNotFound" $transcript
+            AddToArray "BYU Mediasite Video" $item.title $video_ID $video_Length "$title$videoNotFound" $transcript $url
         }
         elseif ($iframe.contains('Panopto')) {
             $video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | ForEach-Object {$_.Matches.Groups[1].Value}).split('=').split('&')[1]
@@ -131,10 +133,10 @@ function Start-ProcessIframes {
             $transcript = Get-TranscriptAvailable $iframe
             if ($transcript) {$transcript = "Yes"}
             else {$transcript = "No"}
-            AddToArray "Panopto Video" $item.title $video_ID $video_Length "$title$videoNotFound" $transcript
+            AddToArray "Panopto Video" $item.title $video_ID $video_Length "$title$videoNotFound" $transcript $url
         }
         else {
-            AddToArray "Iframe" $item.title "" "00:00:00" $title "N\A"
+            AddToArray "Iframe" $item.title "" "00:00:00" $title "N\A" $url
         }
     }
 }
@@ -147,7 +149,7 @@ function Start-ProcessVideoTags {
         $transcript = Get-TranscriptAvailable $video
         if ($transcript) {$transcript = "Yes"}
         else {$transcript = "No"}
-        AddToArray "Inline Media Video" $item.title $videoID "00:00:00" "Inline Media:`nUnable to find title or video length for this type of video" $transcript
+        AddToArray "Inline Media Video" $item.title $videoID "00:00:00" "Inline Media:`nUnable to find title or video length for this type of video" $transcript $src
     }
 }
 
@@ -172,7 +174,7 @@ function Start-ProcessBrightcoveVideoHTML {
         }
         if ($transcript) {$transcript = "Yes"}
         else {$transcript = "No"}
-        AddToArray "Brightcove Video" $item.title $id $video_Length $title $transcript
+        AddToArray "Brightcove Video" $item.title $id $video_Length $title $transcript "No URL for this type"
     }
 }
 
@@ -184,7 +186,8 @@ function AddToArray {
         [TimeSpan]$VideoLength,
         [string]$Text,
         [string]$Transcript,
-        [string]$MediaCount = 1
+        [string]$MediaCount = 1,
+        [string]$url
     )
     $excel = Export-Excel $ExcelReport -PassThru
 
@@ -208,6 +211,7 @@ function AddToArray {
     $Global:textList += $Text
     $Global:transcriptAvailability += $Transcript
     $Global:mediaCountList += $MediaCount
+    $Global:videoUrlList += $url
     $excel.Dispose()
 }
 

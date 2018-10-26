@@ -163,12 +163,12 @@ function Format-MediaExcel1 {
   #>
     $excel = Export-Excel $ExcelReport -PassThru
     if (-not ($NULL -eq $excel)) {
-        $excel.Workbook.Worksheets["Sheet1"].Column(4).Width = 25
-        $excel.Workbook.Worksheets["Sheet1"].Column(5).Width = 75
-        $excel.Workbook.Worksheets["Sheet1"].Column(5).Style.wraptext = $true
-        $excel.Workbook.Worksheets["Sheet1"].Column(6).Width = 25
+        $excel.Workbook.Worksheets["Sheet1"].Column(5).Width = 25
+        $excel.Workbook.Worksheets["Sheet1"].Column(6).Width = 75
+        $excel.Workbook.Worksheets["Sheet1"].Column(6).Style.wraptext = $true
+        $excel.Workbook.Worksheets["Sheet1"].Column(7).Width = 25
         $sheet = $excel.Workbook.Worksheets["Sheet1"]
-        Set-Format -WorkSheet $sheet -Range "D:D" -NumberFormat "hh:mm:ss"
+        Set-Format -WorkSheet $sheet -Range "E:E" -NumberFormat "hh:mm:ss"
         Set-Format -WorkSheet $sheet -Range "C:C" -NumberFormat "#############"
         $excel.Save()
         $excel.Dispose()
