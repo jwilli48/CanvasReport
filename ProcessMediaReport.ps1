@@ -135,7 +135,6 @@ function Start-ProcessIframes {
             else {$transcript = "No"}
             AddToArray "Panopto Video" "$($item.url -split `"api/v\d/`" -join `"`")" $video_ID $video_Length "$title$videoNotFound" $transcript $url
         }
-        elseif ($iframe.contains(''))
         else {
             AddToArray "Iframe" "$($item.url -split `"api/v\d/`" -join `"`")" "" "00:00:00" $title "N\A" $url
         }
