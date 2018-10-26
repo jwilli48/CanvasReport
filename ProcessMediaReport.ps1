@@ -36,7 +36,7 @@ function Start-ProcessLinks {
                 $transcript = Get-TranscriptAvailable $link
                 if ($transcript) {$transcript = "Yes"}
                 else {$transcript = "No"}
-                AddToArray "Canvas Video Link" $item.title "" "00:00:00" "Inline Media:`nUnable to find title or video length for this type of video" $transcript
+                AddToArray "Canvas Video Link" "$($item.url -split `"api/v\d/`" -join `"`")" "" "00:00:00" "Inline Media:`nUnable to find title or video length for this type of video" $transcript
                 break
             }
         }
@@ -63,7 +63,7 @@ function Start-ProcessLinks {
                     $video_length = "00:00:00"
                     $Global:videoNotFound = "`nVideo not found"
                 }
-                AddToArray "Youtube Link" $item.title $VideoID $video_Length "$href$videoNotFound" "Yes" $href
+                AddToArray "Youtube Link" "$($item.url -split `"api/v\d/`" -join `"`")" $VideoID $video_Length "$href$videoNotFound" "Yes" $href
                 break
             }
             Default {}
@@ -103,7 +103,7 @@ function Start-ProcessIframes {
                 $video_length = "00:00:00"
                 $Global:videoNotFound = "`nVideo not found"
             }
-            AddToArray "Youtube Video" $item.title $video_ID $video_Length "$title$videoNotFound" "Yes" $Url
+            AddToArray "Youtube Video" "$($item.url -split `"api/v\d/`" -join `"`")" $video_ID $video_Length "$title$videoNotFound" "Yes" $Url
         }
         elseif ($iframe.contains('brightcove')) {
             $Video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | ForEach-Object {$_.Matches.Groups[1].value}).split('=')[-1].split("&")[0]
@@ -111,10 +111,10 @@ function Start-ProcessIframes {
             $transcript = Get-TranscriptAvailable $iframe
             if ($transcript) {$transcript = "Yes"}
             else {$transcript = "No"}
-            AddToArray "Brightcove Video" $item.title $video_ID $video_Length "$title$videoNotFound" $transcript $url
+            AddToArray "Brightcove Video" "$($item.url -split `"api/v\d/`" -join `"`")" $video_ID $video_Length "$title$videoNotFound" $transcript $url
         }
         elseif ($iframe.contains('H5P')) {
-            AddToArray "H5P" $item.title "" "00:00:00" $title "N\A" $url
+            AddToArray "H5P" "$($item.url -split `"api/v\d/`" -join `"`")" "" "00:00:00" $title "N\A" $url
         }
         elseif ($iframe.contains('byu.mediasite')) {
             $video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | ForEach-Object {$_.Matches.Groups[1].Value}).split('/')[-1]
@@ -125,7 +125,7 @@ function Start-ProcessIframes {
             $transcript = Get-TranscriptAvailable $iframe
             if ($transcript) {$transcript = "Yes"}
             else {$transcript = "No"}
-            AddToArray "BYU Mediasite Video" $item.title $video_ID $video_Length "$title$videoNotFound" $transcript $url
+            AddToArray "BYU Mediasite Video" "$($item.url -split `"api/v\d/`" -join `"`")" $video_ID $video_Length "$title$videoNotFound" $transcript $url
         }
         elseif ($iframe.contains('Panopto')) {
             $video_ID = ($iframe | Select-String -pattern 'src="(.*?)"' | ForEach-Object {$_.Matches.Groups[1].Value}).split('=').split('&')[1]
@@ -133,10 +133,10 @@ function Start-ProcessIframes {
             $transcript = Get-TranscriptAvailable $iframe
             if ($transcript) {$transcript = "Yes"}
             else {$transcript = "No"}
-            AddToArray "Panopto Video" $item.title $video_ID $video_Length "$title$videoNotFound" $transcript $url
+            AddToArray "Panopto Video" "$($item.url -split `"api/v\d/`" -join `"`")" $video_ID $video_Length "$title$videoNotFound" $transcript $url
         }
         else {
-            AddToArray "Iframe" $item.title "" "00:00:00" $title "N\A" $url
+            AddToArray "Iframe" "$($item.url -split `"api/v\d/`" -join `"`")" "" "00:00:00" $title "N\A" $url
         }
     }
 }
@@ -149,7 +149,7 @@ function Start-ProcessVideoTags {
         $transcript = Get-TranscriptAvailable $video
         if ($transcript) {$transcript = "Yes"}
         else {$transcript = "No"}
-        AddToArray "Inline Media Video" $item.title $videoID "00:00:00" "Inline Media:`nUnable to find title or video length for this type of video" $transcript $src
+        AddToArray "Inline Media Video" "$($item.url -split `"api/v\d/`" -join `"`")" $videoID "00:00:00" "Inline Media:`nUnable to find title or video length for this type of video" $transcript $src
     }
 }
 
@@ -174,7 +174,7 @@ function Start-ProcessBrightcoveVideoHTML {
         }
         if ($transcript) {$transcript = "Yes"}
         else {$transcript = "No"}
-        AddToArray "Brightcove Video" $item.title $id $video_Length $title $transcript "No URL for this type"
+        AddToArray "Brightcove Video" "$($item.url -split `"api/v\d/`" -join `"`")" $id $video_Length $title $transcript "No URL for this type"
     }
 }
 

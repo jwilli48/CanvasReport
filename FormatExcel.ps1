@@ -172,6 +172,15 @@ function Format-MediaExcel1 {
         $sheet = $excel.Workbook.Worksheets["Sheet1"]
         Set-Format -WorkSheet $sheet -Range "E:E" -NumberFormat "hh:mm:ss"
         Set-Format -WorkSheet $sheet -Range "C:C" -NumberFormat "#############"
+
+        $column = 2 #C
+        $row = 2 #start of data
+        while ($NULL -ne $cell[$row, $column].Value) {
+            $cell[$row, $column].Hyperlink = $cell[$row, $column].Value
+            $cell[$row, $column].Value = $cell[$row, $column].Value.Split("/").split("\")[-1]
+            $row++
+        }
+
         $excel.Save()
         $excel.Dispose()
     }
