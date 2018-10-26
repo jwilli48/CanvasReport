@@ -163,6 +163,8 @@ function Format-MediaExcel1 {
   #>
     $excel = Export-Excel $ExcelReport -PassThru
     if (-not ($NULL -eq $excel)) {
+        $excel.Workbook.Worksheets["Sheet1"].Column(2).Width = 75
+        $excel.Workbook.Worksheets["Sheet1"].Column(2).Style.wraptext = $true
         $excel.Workbook.Worksheets["Sheet1"].Column(5).Width = 25
         $excel.Workbook.Worksheets["Sheet1"].Column(6).Width = 75
         $excel.Workbook.Worksheets["Sheet1"].Column(6).Style.wraptext = $true

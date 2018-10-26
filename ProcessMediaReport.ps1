@@ -211,7 +211,7 @@ function AddToArray {
     $Global:textList += $Text
     $Global:transcriptAvailability += $Transcript
     $Global:mediaCountList += $MediaCount
-    $Global:videoUrlList += $url
+    $Global:UrlList += $url
     $excel.Dispose()
 }
 
