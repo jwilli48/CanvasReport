@@ -111,7 +111,7 @@ function Start-ProcessIframes {
             $transcript = Get-TranscriptAvailable $iframe
             if ($transcript) {$transcript = "Yes"}
             else {$transcript = "No"}
-            AddToArray "Brightcove Video" "$($item.url -split `"api/v\d/`" -join `"`")" $video_ID $video_Length "$title$videoNotFound" $transcript $url
+            AddToArray "Brightcove Video" "$($item.url -split `"api/v\d/`" -join `"`")" $video_ID $video_Length "$title$videoNotFound" $transcript "https:$url"
         }
         elseif ($iframe.contains('H5P')) {
             AddToArray "H5P" "$($item.url -split `"api/v\d/`" -join `"`")" "" "00:00:00" $title "N\A" $url
@@ -134,6 +134,14 @@ function Start-ProcessIframes {
             if ($transcript) {$transcript = "Yes"}
             else {$transcript = "No"}
             AddToArray "Panopto Video" "$($item.url -split `"api/v\d/`" -join `"`")" $video_ID $video_Length "$title$videoNotFound" $transcript $url
+        }
+        elseif ($iframe.contains('alexanderstreet')) {
+            $video_ID = (($iframe | Select-String -pattern 'src="(.*?)"' | ForEach-Object {$_.Matches.Groups[1].Value}) -split "token/")[-1]
+            $video_Length = (Get-AlexanderStreetVideoLength $video_ID).toString('hh\:mm\:ss')
+            $transcript = Get-TranscriptAvailable $iframe
+            if ($transcript) {$transcript = "Yes"}
+            else {$transcript = "No"}
+            AddToArray "Alexander Street Video" "$($item.url -split `"api/v\d/`" -join `"`")" $Video_ID $video_Length "$title$videoNotFound" $transcript $url
         }
         else {
             AddToArray "Iframe" "$($item.url -split `"api/v\d/`" -join `"`")" "" "00:00:00" $title "N\A" $url

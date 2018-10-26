@@ -96,6 +96,23 @@ function Get-PanoptoVideoLength {
     $length
 }
 
+function Get-AlexanderStreetVideoLength {
+    param(
+        [string]$videoId
+    )
+    $chrome.url = "https://search.alexanderstreet.com/embed/token/$videoId"
+    try{
+        $length = (Invoke-SeWaitUntil -DriverList $chrome -Condition ElementIsVisible -By CssSelector -Locator span.fulltime).text
+    }
+    catch{
+        Write-Host "Video not found" -ForegroundColor Magenta
+        $length = "00:00"
+        $Global:videoNotFound = "`nVideo not found"
+    }
+    $length = "00:" + $length
+    $length = [TimeSpan]$length
+    $length
+}
 function Get-TranscriptAvailable {
     param(
         [string]$iframe
