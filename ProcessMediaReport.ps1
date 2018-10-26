@@ -186,8 +186,8 @@ function AddToArray {
         [TimeSpan]$VideoLength,
         [string]$Text,
         [string]$Transcript,
-        [string]$MediaCount = 1,
-        [string]$url
+        [string]$url,
+        [string]$MediaCount = 1
     )
     $excel = Export-Excel $ExcelReport -PassThru
 
