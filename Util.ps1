@@ -102,7 +102,7 @@ function Get-AlexanderStreetVideoLength {
     )
     $chrome.url = "https://search.alexanderstreet.com/embed/token/$videoId"
     try{
-        $length = (Invoke-SeWaitUntil -DriverList $chrome -Condition ElementIsVisible -By CssSelector -Locator span.fulltime).text
+        $length = (Wait-UntilElementIsVisible -ByCssSelector -Selector span.fulltime).text
     }
     catch{
         Write-Host "Video not found" -ForegroundColor Magenta
@@ -113,6 +113,138 @@ function Get-AlexanderStreetVideoLength {
     $length = [TimeSpan]$length
     $length
 }
+
+function Get-AlexanderStreenLinkLength {
+     param(
+        [string]$videoId
+    )
+    $chrome.url = "https://lib.byu.edu/remoteauth/?url=https://search.alexanderstreet.com/view/work/bibliog
+raphic_entity|video_work|$videoId"
+    try{
+        $length = (Wait-UntilElementIsVisible -ByCssSelector -Selector span.fulltime).text
+    }
+    catch{
+        Write-Host "Video not found" -ForegroundColor Magenta
+        $length = "00:00"
+        $Global:videoNotFound = "`nVideo not found"
+    }
+    $length = "00:" + $length
+    $length = [TimeSpan]$length
+    $length
+}
+function Get-KanopyVideoLength {
+    param(
+        [string]$videoId
+    )
+    $chrome.url = "https://byu.kanopy.com/embed/$videoID"
+    try{
+        (Wait-UntilElementIsVisible -Selector button.vjs-big-play-button -byCssSelector).click()
+        $length = ((Wait-UntilElementIsVisible -ByCssSelector -Selector div.vjs-remaining-time-display).text -split '-')[-1]
+    }catch{
+        Write-Host "Video not found" -ForegroundColor Magenta
+        $length = "00:00"
+        $Global:videoNotFound = "`nVideo not found"
+    }
+    $length = "00:" + $length
+    $length = [TimeSpan]$length
+    $length
+}
+
+function Get-KanopyLinkLength {
+    param(
+        [string]$videoId
+    )
+    $chrome.url = "https://byu.kanopy.com/video/$videoID"
+    try{
+        (Wait-UntilElementIsVisible -Selector button.vjs-big-play-button -byCssSelector).click()
+        $length = ((Wait-UntilElementIsVisible -ByCssSelector -Selector div.vjs-remaining-time-display).text -split '-')[-1]
+    }catch{
+        Write-Host "Video not found" -ForegroundColor Magenta
+        $length = "00:00"
+        $Global:videoNotFound = "`nVideo not found"
+    }
+    $length = "00:" + $length
+    $length = [TimeSpan]$length
+    $length
+}
+
+function Get-AmbroseVideoLength {
+    param(
+        [string]$videoId
+    )
+    $chrome.url = "https://byu.kanopy.com/embed/$videoID"
+    try{
+        (Wait-UntilElementIsVisible -Selector div.jw-icon.jw-icon-display.jw-button-color.jw-reset -byCssSelector).click()
+        $length = ((Wait-UntilElementIsVisible -ByCssSelector -Selector span.jw-text.jw-reset.jw-text-duration).text -split '-')[-1]
+    }catch{
+        Write-Host "Video not found" -ForegroundColor Magenta
+        $length = "00:00"
+        $Global:videoNotFound = "`nVideo not found"
+    }
+    $length = "00:" + $length
+    $length = [TimeSpan]$length
+    $length
+}
+
+function Get-FacebookVideoLength {
+    param(
+        [string]$videoId
+    )
+    $chrome.url = "https://www.facebook.com/video/embed?video_id=$videoID"
+    try{
+        (Wait-UntilElementIsVisible -Selector img -byCssSelector).click()
+        $length = (Wait-UntilElementIsVisible -ByCssSelector -Selector div[playbackdurationtimestamp]).text -replace '-', '0'
+    }catch{
+        try{
+            $chrome.Navigate().Refresh()
+            (Wait-UntilElementIsVisible -Selector img -byCssSelector).click()
+            $length = (Wait-UntilElementIsVisible -ByCssSelector -Selector div[playbackdurationtimestamp]).text -replace '-', '0'
+        }catch{
+            Write-Host "Video not found" -ForegroundColor Magenta
+            $length = "00:00"
+            $Global:videoNotFound = "`nVideo not found"
+        }
+    }
+    $length = "00:" + $length
+    $length = [TimeSpan]$length
+    $length
+}
+
+function Get-DailyMotionVideoLength {
+    param(
+        [string]$videoId
+    )
+    $chrome.url = "https://www.dailymotion.com/embed/video/$videoID"
+    try{
+        (Wait-UntilElementIsVisible -Selector button[aria-label*="Playback"] -byCssSelector).click()
+        $length = ((Wait-UntilElementIsVisible -ByCssSelector -Selector span[aria-label*="Duration"]).text)
+    }catch{
+        Write-Host "Video not found" -ForegroundColor Magenta
+        $length = "00:00"
+        $Global:videoNotFound = "`nVideo not found"
+    }
+    $length = "00:" + $length
+    $length = [TimeSpan]$length
+    $length
+}
+
+function Get-VimeoVideoLength {
+    param(
+        [string]$videoId
+    )
+    $chrome.url = "https://player.vimeo.com/video/$videoID"
+    try{
+        $length = ((Wait-UntilElementIsVisible -ByCssSelector -Selector div.timecode).text)
+    }catch{
+        Write-Host "Video not found" -ForegroundColor Magenta
+        $length = "00:00"
+        $Global:videoNotFound = "`nVideo not found"
+    }
+    $length = "00:" + $length
+    $length = [TimeSpan]$length
+    $length
+}
+
 function Get-TranscriptAvailable {
     param(
         [string]$iframe

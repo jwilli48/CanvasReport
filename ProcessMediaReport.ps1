@@ -43,6 +43,7 @@ function Start-ProcessLinks {
     }
     foreach ($href in $href_list) {
         $Global:videoNotFound = ""
+        $text = ($link_list -match $href) | Select-String -pattern "<a.*?>(.*?)</a>" -AllMatches | ForEach-Object {$_.Matches.Groups[1].Value}
         switch -regex ($href) {
             "youtu\.?be" {
                 if ($href.contains("t=")) {
@@ -63,7 +64,19 @@ function Start-ProcessLinks {
                     $video_length = "00:00:00"
                     $Global:videoNotFound = "`nVideo not found"
                 }
-                AddToArray "Youtube Link" "$($item.url -split `"api/v\d/`" -join `"`")" $VideoID $video_Length "$href$videoNotFound" "Yes" $href
+                AddToArray "Youtube Link" "$($item.url -split `"api/v\d/`" -join `"`")" $VideoID $video_Length "$text$videoNotFound" "Yes" $href
+                break
+            }
+            "alexanderstreet"{
+                $id = $href.split("|")[-1]
+                $length = (Get-AlexanderStreetLinkLength $id).toString("hh\:mm\:ss")
+                AddToArray "AlexanderStreet Link" "$($item.url -split `"api/v\d/`" -join `"`")" $id $length "$text$videoNotFound" "N\A" $href
+                break
+            }
+            "kanopy"{
+                $id = $href.split("/")[-1]
+                $length = (Get-KanopyLinkLength $id).toString("hh\:mm\:ss")
+                AddToArray "Kanopy Link" "$($item.url -split `"api/v\d/`" -join `"`")" $id $length "$text$videoNotFound" "N\A" $href
                 break
             }
             Default {}
@@ -141,7 +154,48 @@ function Start-ProcessIframes {
             $transcript = Get-TranscriptAvailable $iframe
             if ($transcript) {$transcript = "Yes"}
             else {$transcript = "No"}
-            AddToArray "Alexander Street Video" "$($item.url -split `"api/v\d/`" -join `"`")" $Video_ID $video_Length "$title$videoNotFound" $transcript $url
+            AddToArray "AlexanderStreet Video" "$($item.url -split `"api/v\d/`" -join `"`")" $Video_ID $video_Length "$title$videoNotFound" $transcript $url
+        }
+        elseif ($iframe.contains('kanopy')) {
+            $Video_ID = (($iframe | Select-String -pattern 'src="(.*?)"' | ForEach-Object {$_.Matches.Groups[1].Value}) -split "embed/")[-1]
+            $video_Length = (Get-KanopyVideoLength $Video_ID).toString('hh\:mm\:ss')
+            $transcript = Get-TranscriptAvailable $iframe
+            if ($transcript) {$transcript = "Yes"}
+            else {$transcript = "No"}
+            AddToArray "Kanopy Video" "$($item.url -split `"api/v\d/`" -join `"`")" $Video_ID $video_Length "$title$videoNotFound" $transcript $url
+        }
+        elseif($iframe.contains('ambrosevideo')) {
+            $Video_ID = (($iframe | Select-String -pattern 'src="(.*?)"' | ForEach-Object {$_.Matches.Groups[1].Value}).split('?')[-1].split('&')[0])
+            $video_Length = (Get-AmbroseVideoLength $Video_ID).toString('hh\:mm\:ss')
+            $transcript = Get-TranscriptAvailable $iframe
+            if ($transcript) {$transcript = "Yes"}
+            else {$transcript = "No"}
+            AddToArray "Ambrose Video" "$($item.url -split `"api/v\d/`" -join `"`")" $Video_ID $video_Length "$title$videoNotFound" $transcript $url
+        }
+        elseif($iframe.contains('facebook')) {
+            #$Video_ID = (($iframe | Select-String -pattern 'src="(.*?)"' | ForEach-Object {$_.Matches.Groups[1].Value}).split('=')[-1])
+            $Video_ID = (($iframe | Select-String -pattern 'src="(.*?)"' | ForEach-Object {$_.Matches.Groups[1].Value})) | Select-String -pattern "\d{17}" -Allmatches | ForEach-Object {$_.Matches.Value}
+            $video_Length = (Get-FacebookVideoLength $Video_ID).toString('hh\:mm\:ss')
+            $transcript = Get-TranscriptAvailable $iframe
+            if ($transcript) {$transcript = "Yes"}
+            else {$transcript = "No"}
+            AddToArray "Facebook Video" "$($item.url -split `"api/v\d/`" -join `"`")" $Video_ID $video_Length "$title$videoNotFound" $transcript $url
+        }
+        elseif($iframe.contains('dailymotion')) {
+            $Video_ID = (($iframe | Select-String -pattern 'src="(.*?)"' | ForEach-Object {$_.Matches.Groups[1].Value}).split('/')[-1])
+            $video_length = (Get-DailyMotionVideoLength $Video_ID).toString('hh\:mm\:ss')
+            $transcript = Get-TranscriptAvailable $iframe
+            if ($transcript) {$transcript = "Yes"}
+            else {$transcript = "No"}
+            AddToArray "DailyMotion Video" "$($item.url -split `"api/v\d/`" -join `"`")" $Video_ID $video_Length "$title$videoNotFound" $transcript $url
+        }
+        elseif($iframe.contains('vimeo')) {
+            $Video_ID = (($iframe | Select-String -pattern 'src="(.*?)"' | ForEach-Object {$_.Matches.Groups[1].Value}).split('/')[-1]).split('?')[0]
+            $video_length = (Get-VimeoVideoLength $Video_ID).toString('hh\:mm\:ss')
+            $transcript = Get-TranscriptAvailable $iframe
+            if ($transcript) {$transcript = "Yes"}
+            else {$transcript = "No"}
+            AddToArray "Vimeo Video" "$($item.url -split `"api/v\d/`" -join `"`")" $Video_ID $video_Length "$title$videoNotFound" $transcript $url
         }
         else {
             AddToArray "Iframe" "$($item.url -split `"api/v\d/`" -join `"`")" "" "00:00:00" $title "N\A" $url
