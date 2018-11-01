@@ -170,9 +170,8 @@ function Format-MediaExcel1 {
         $excel.Workbook.Worksheets["Sheet1"].Column(5).Width = 10
         $excel.Workbook.Worksheets["Sheet1"].Column(6).Width = 75
         $excel.Workbook.Worksheets["Sheet1"].Column(6).Style.wraptext = $true
-        $excel.Workbook.Worksheets["Sheet1"].Column(7).Width = 5
-        $excel.Workbook.Worksheets["Sheet1"].Column(7).Width = 5
-        $excel.Workbook.Worksheets["Sheet1"].Column(3).Style.HorizontalAlignment = "Center"
+        $excel.Workbook.Worksheets["Sheet1"].Column(7).Width = 12
+        $excel.Workbook.Worksheets["Sheet1"].Column(3).Style.HorizontalAlignment = "Left"
         $sheet = $excel.Workbook.Worksheets["Sheet1"]
         Set-Format -WorkSheet $sheet -Range "E:E" -NumberFormat "hh:mm:ss"
         Set-Format -WorkSheet $sheet -Range "C:C" -NumberFormat "#############"
