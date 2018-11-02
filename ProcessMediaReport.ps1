@@ -78,6 +78,14 @@ function Start-ProcessLinks {
                 $length = (Get-KanopyLinkLength $id).toString("hh\:mm\:ss")
                 AddToArray "Kanopy Link" "$($item.url -split `"api/v\d/`" -join `"`")" $id $length "$text$videoNotFound" "N\A" $href
                 break
+            }"byu.mediasite" {
+                $id = $href.split("/")[-1]
+                $length = (Get-BYUMediaSiteVideoLength $id);
+                $transcript = Get-TranscriptAvailable $href
+                if ($transcript) {$transcript = "Yes"}
+                else {$transcript = "No"}
+                AddToArray "BYU Mediasite Video" "$($item.url -split `"api/v\d/`" -join `"`")" $id $length "$text$videoNotFound" $transcript $href
+                break
             }
             Default {}
         }
