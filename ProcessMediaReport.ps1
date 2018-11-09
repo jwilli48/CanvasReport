@@ -135,7 +135,7 @@ function Start-ProcessIframes {
             if(-not $url.contains("https:")){
                     $url = "https:$url"
             }
-            AddToArray "Brightcove Video" "$($item.url -split `"api/v\d/`" -join `"`")" $video_ID $video_Length "$title$videoNotFound" $transcript "https:$url"
+            AddToArray "Brightcove Video" "$($item.url -split `"api/v\d/`" -join `"`")" $video_ID $video_Length "$title$videoNotFound" $transcript "$url"
         }
         elseif ($iframe.contains('H5P')) {
             AddToArray "H5P" "$($item.url -split `"api/v\d/`" -join `"`")" "" "00:00:00" $title "N\A" $url

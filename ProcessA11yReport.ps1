@@ -318,19 +318,40 @@ function Start-ProcessFlash {
 }
 
 function Start-ProcessColor {
-    $colorList = $page_body -split "`n" | Select-String -Pattern "color:([^;`"]*)" -Allmatches | 
-        ForEach-Object {$_.Matches.Groups[1].Value}
+    $colorList = $page_body -split "`n" | Select-String -Pattern "((?:background-)?color:[^;`"]*)" -Allmatches | 
+        ForEach-Object {$c = [PSCustomObject]@{
+                                Color = ""
+                                BackgroundColor = ""
+                                }
+                        if($_.Matches.Groups[1].Value -match "background")
+                        {
+                            $c.BackgroundColor = $_.Matches.Groups[1].Value -replace ".*?:", "" -replace " ", ""
+                            $c.Color = $_.Matches.Groups[2].Value -replace ".*?:", "" -replace " ", ""
+                        }else{
+                            $c.BackgroundColor = $_.Matches.Groups[2].Value -replace ".*?:", "" -replace " ", ""
+                            $c.Color = $_.Matches.Groups[1].Value -replace ".*?:", "" -replace " ", ""
+                        }
+                        if($null -eq $c.BackgroundColor -or "" -eq $c.BackgroundColor)
+                        {
+                            $c.BackgroundColor = "#FFFFFF"
+                        }
+                        $c
+                        }
     Foreach ($color in $colorList) {
-        $color = $color.replace(" ", "")
-        if ($color -notmatch "#") {
-            $convert = @([System.drawing.Color]::$color.R, [System.drawing.Color]::$color.G, [System.drawing.Color]::$color.B)
-            $color = '#' + -join (1..3| % {"{0:X2}" -f + ($convert[$_])})
+        if ($color.Color -notmatch "#") {
+            $convert = @([System.drawing.Color]::$color.Color.R, [System.drawing.Color]::$color.Color.G, [System.drawing.Color]::$color.Color.B)
+            $color.Color = '#' + -join (1..3| % {"{0:X2}" -f + ($convert[$_])})
         }
-        $color = $color.replace("#", "")
-        $results = (Invoke-WebRequest -Uri "https://webaim.org/resources/contrastchecker/?fcolor=$color&bcolor=FFFFFF&api").Content | 
+        if ($color.BackgroundColor -notmatch "#") {
+            $convert = @([System.drawing.Color]::$color.BackgroundColor.R, [System.drawing.Color]::$color.BackgroundColor.G, [System.drawing.Color]::$color.BackgroundColor.B)
+            $color.BackgroundColor = '#' + -join (1..3| % {"{0:X2}" -f + ($convert[$_])})
+        }
+        $color.Color = $color.Color.replace("#", "")
+        $color.BackgroundColor = $color.BackgroundColor.replace("#", "")
+        $results = (Invoke-WebRequest -Uri ("https://webaim.org/resources/contrastchecker/?fcolor={0}&bcolor={1}&api" -f $color.Color, $color.BackgroundColor)).Content | 
             ConvertFrom-Json
         if ($results.AA -ne 'pass') {
-            AddToArray "Color Contrast" "$($item.url -split `"api/v\d/`" -join `"`")" "" "Color: $color`n$($results -replace `"@{`", `"`" -replace `"}`",`"`" -replace `" `", `"`" -split `"`;`" -join "`n")" "Does not meet AA color contrast"
+            AddToArray "Color Contrast" "$($item.url -split `"api/v\d/`" -join `"`")" "" "Color: $($color.Color)`nBackgroundColor: $($color.BackgroundColor)`n$($results -replace `"@{`", `"`" -replace `"}`",`"`" -replace `" `", `"`" -split `"`;`" -join "`n")" "Does not meet AA color contrast"
         }
     }
 }
