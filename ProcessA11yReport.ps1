@@ -327,8 +327,10 @@ function Start-ProcessColor {
                         {
                             $c.BackgroundColor = $_.Matches.Groups[1].Value -replace ".*?:", "" -replace " ", ""
                             $c.Color = $_.Matches.Groups[2].Value -replace ".*?:", "" -replace " ", ""
-                        }else{
+                        }elseif($_.Matches.Groups[2].Value -match "background"){
                             $c.BackgroundColor = $_.Matches.Groups[2].Value -replace ".*?:", "" -replace " ", ""
+                            $c.Color = $_.Matches.Groups[1].Value -replace ".*?:", "" -replace " ", ""
+                        }else{
                             $c.Color = $_.Matches.Groups[1].Value -replace ".*?:", "" -replace " ", ""
                         }
                         if($null -eq $c.BackgroundColor -or "" -eq $c.BackgroundColor)
