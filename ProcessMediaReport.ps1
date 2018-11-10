@@ -230,6 +230,7 @@ function Start-ProcessBrightcoveVideoHTML {
     $brightcove_list = $page_body | Select-String -pattern 'id="[^\d]*(\d{13}).*?"' -Allmatches | ForEach-Object {$_.Matches.Value}
     $id_list = $brightcove_list | Select-String -pattern '\d{13}' -AllMatches | ForEach-Object {$_.matches.Value}
     foreach ($id in $id_list) {
+        $Global:videoNotFound = ""
         $video_Length = (Get-BrightcoveVideoLength $id).toString('hh\:mm\:ss')
         $transcriptCheck = $page_body.split("`n")
         $i = 0
@@ -247,7 +248,7 @@ function Start-ProcessBrightcoveVideoHTML {
         }
         if ($transcript) {$transcript = "Yes"}
         else {$transcript = "No"}
-        AddToArray "Brightcove Video" "$($item.url -split `"api/v\d/`" -join `"`")" $id $video_Length $title $transcript "No URL for this type"
+        AddToArray "Brightcove Video" "$($item.url -split `"api/v\d/`" -join `"`")" $id $video_Length "$title$videoNotFound" $transcript "No URL for this type"
     }
 }
 
