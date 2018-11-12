@@ -46,8 +46,9 @@ function Start-ProcessLinks {
         $text = ($link_list -match $href) | Select-String -pattern "<a.*?>(.*?)</a>" -AllMatches | ForEach-Object {$_.Matches.Groups[1].Value}
         switch -regex ($href) {
             "youtu\.?be" {
+                $href = ($href -split "v=")[-1]
                 if ($href.contains("t=")) {
-                    $href.split("?")[0].split("/")[-1]
+                    $videoID = $href.split("?")[0].split("/")[-1]
                 }
                 elseif ($href.contains('=')) {
                     $VideoID = ($href -split 'v=')[-1].split("&")[0]
@@ -56,7 +57,7 @@ function Start-ProcessLinks {
                     $VideoID = $href.split('/')[-1]
                 }
                 try {
-                    $VideoID = $VideoID.split("?")[0]
+                    $VideoID = $VideoID.split("?&")[0]
                     $video_Length = [timespan]::fromseconds((Get-GoogleVideoSeconds -VideoID $VideoID)).toString("hh\:mm\:ss")
                 }
                 catch {
