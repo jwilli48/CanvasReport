@@ -341,19 +341,18 @@ function Start-ProcessColor {
                         }
                         if($null -eq $c.Color -or "" -eq $c.Color)
                         {
-                            Write-Host "Main color was empty"
                             $c.Color = "#000000"
                         }
                         $c
                         }
     Foreach ($color in $colorList) {
         if ($color.Color -notmatch "#") {
-            $convert = @([System.drawing.Color]::$color.Color.R, [System.drawing.Color]::$color.Color.G, [System.drawing.Color]::$color.Color.B)
-            $color.Color = '#' + -join (1..3| % {"{0:X2}" -f + ($convert[$_])})
+            $convert = @([System.drawing.Color]::($color.Color).R, [System.drawing.Color]::($color.Color).G, [System.drawing.Color]::($color.Color).B)
+            $color.Color = '#' + -join (0..2| % {"{0:X2}" -f + ($convert[$_])})
         }
         if ($color.BackgroundColor -notmatch "#") {
-            $convert = @([System.drawing.Color]::$color.BackgroundColor.R, [System.drawing.Color]::$color.BackgroundColor.G, [System.drawing.Color]::$color.BackgroundColor.B)
-            $color.BackgroundColor = '#' + -join (1..3| % {"{0:X2}" -f + ($convert[$_])})
+            $convert = @([System.drawing.Color]::($color.BackgroundColor).R, [System.drawing.Color]::($color.BackgroundColor).G, [System.drawing.Color]::($color.BackgroundColor).B)
+            $color.BackgroundColor = '#' + -join (0..2| % {"{0:X2}" -f + ($convert[$_])})
         }
         $color.Color = $color.Color.replace("#", "")
         $color.BackgroundColor = $color.BackgroundColor.replace("#", "")
