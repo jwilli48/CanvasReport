@@ -339,7 +339,7 @@ function Start-ProcessColor {
                         {
                             $c.BackgroundColor = "#FFFFFF"
                         }
-                        if($null -eq $c.Color -or "" -eq $c.BackgroundColor)
+                        if($null -eq $c.Color -or "" -eq $c.Color)
                         {
                             Write-Host "Main color was empty"
                             $c.Color = "#000000"
