@@ -46,15 +46,15 @@ function Start-ProcessLinks {
         $text = ($link_list -match $href) | Select-String -pattern "<a.*?>(.*?)</a>" -AllMatches | ForEach-Object {$_.Matches.Groups[1].Value}
         switch -regex ($href) {
             "youtu\.?be" {
-                $href = ($href -split "v=")[-1]
-                if ($href.contains("t=")) {
+                $href_split = ($href -split "v=")[-1]
+                if ($href_split.contains("t=")) {
                     $videoID = $href.split("?")[0].split("/")[-1]
                 }
-                elseif ($href.contains('=')) {
-                    $VideoID = ($href -split 'v=')[-1].split("&")[0]
+                elseif ($href_split.contains('=')) {
+                    $VideoID = ($href_split -split 'v=')[-1].split("&")[0]
                 }
                 else {
-                    $VideoID = $href.split('/')[-1]
+                    $VideoID = $href_split.split('/')[-1]
                 }
                 try {
                     $VideoID = $VideoID.split("?&")[0]

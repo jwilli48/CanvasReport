@@ -241,11 +241,13 @@ function Start-ProcessTables {
                             if ($check[$i] -notmatch "scope") {
                                 $issueList += "Table headers should have either scope=`"row`" or scope=`"col`" for screenreaders"
                             }
+                            $columnNumber++
                         }
                         elseif ($check[$i] -match "<td") {
                             if ($check[$i] -match "scope") {
                                 $issueList += "Non-header table cells should not have scope attributes"
                             }
+                            $columnNumber++
                         }
                         elseif ($check[$i] -match "<tr") {
                             $rowNumber++
@@ -336,6 +338,11 @@ function Start-ProcessColor {
                         if($null -eq $c.BackgroundColor -or "" -eq $c.BackgroundColor)
                         {
                             $c.BackgroundColor = "#FFFFFF"
+                        }
+                        if($null -eq $c.Color -or "" -eq $c.BackgroundColor)
+                        {
+                            Write-Host "Main color was empty"
+                            $c.Color = "#000000"
                         }
                         $c
                         }
