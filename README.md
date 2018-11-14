@@ -75,3 +75,4 @@ It does not catch every accessibility issue. For example:
 
 What it can not check:
 1. Rubrics within Quizzes / Assignments / Asessments as they are not stored as an HTML table
+2. I realized that it also can not check question banks (as in the quizzes do not actually contain the questions, the questions are instead pulled from a reserve of questions) and I could not find any canvas API endpoint that would allow me to see them.
